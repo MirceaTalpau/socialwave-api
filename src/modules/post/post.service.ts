@@ -13,15 +13,23 @@ export class PostService {
   }
   async createPost(createPostDto: CreatePostDto) {
     try {
+      // Ensure `createdAt` is a valid Date
+      if (!(createPostDto.createdAt instanceof Date)) {
+        createPostDto.createdAt = new Date(createPostDto.createdAt);
+      }
+
+      // Ensure `updatedAt` is a valid Date or set it to the current time
       if (!createPostDto.updatedAt) {
         createPostDto.updatedAt = new Date();
+      } else if (!(createPostDto.updatedAt instanceof Date)) {
+        createPostDto.updatedAt = new Date(createPostDto.updatedAt);
       }
+
       return await this.db.insert(postsTable).values(createPostDto).execute();
     } catch (e) {
       throw e;
     }
   }
-
   async findOne(postId: number) {
     try {
       return await this.db

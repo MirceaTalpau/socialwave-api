@@ -9,6 +9,7 @@ import 'dotenv/config';
 // import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './modules/post/post.module';
 import { AuthMiddleware } from './middlewares/auth.middleware';
+import { FileuploadModule } from './modules/fileupload/fileupload.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
     // }),
     EmailModule,
     PostModule,
+    FileuploadModule,
   ],
   controllers: [AuthController],
   providers: [AppService],
