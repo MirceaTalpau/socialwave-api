@@ -175,6 +175,7 @@ export class AuthService {
       const rawResult = await this.db.execute(
         sql`UPDATE users SET "isActivated" = true WHERE "userId" = ${userFound[0].userId}`,
       );
+      console.log('Raw result:', rawResult);
 
       return {
         message: 'Email verified',

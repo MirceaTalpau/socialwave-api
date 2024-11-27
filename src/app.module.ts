@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { AuthController } from './auth/auth.controller';
+import { AuthController } from './modules/auth/auth.controller';
 import 'dotenv/config';
 // import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostModule } from './modules/post/post.module';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
   imports: [
@@ -40,8 +42,19 @@ import 'dotenv/config';
     //   migrations: [__dirname + '/src/migrations/*{.ts,.js}'],
     // }),
     EmailModule,
+    PostModule,
   ],
   controllers: [AuthController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        { path: 'auth', method: RequestMethod.ALL }, // Exclude all routes under /auth
+        { path: 'auth/(.*)', method: RequestMethod.ALL }, // To exclude dynamic sub-routes like /auth/login
+      )
+      .forRoutes('*'); // Apply middleware to all other routes
+  }
+}

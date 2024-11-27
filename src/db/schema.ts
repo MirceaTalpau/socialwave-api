@@ -14,3 +14,13 @@ export const usersTable = pgTable('users', {
   verificationToken: varchar({ length: 255 }),
   resetToken: varchar({ length: 255 }),
 });
+
+export const postsTable = pgTable('posts', {
+  postId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  description: varchar({ length: 255 }),
+  createdAt: date().notNull(),
+  updatedAt: date(),
+});
