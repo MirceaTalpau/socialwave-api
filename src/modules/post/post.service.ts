@@ -52,4 +52,15 @@ export class PostService {
       throw e;
     }
   }
+
+  async deletePost(postId: number) {
+    try {
+      return await this.db
+        .delete(postsTable)
+        .where(eq(postsTable.postId, postId))
+        .execute();
+    } catch (e) {
+      throw e;
+    }
+  }
 }

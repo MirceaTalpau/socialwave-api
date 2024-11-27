@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -35,6 +43,16 @@ export class PostController {
       createPostDto.userId = user;
       this.postService.createPost(createPostDto);
       return { message: 'Post created successfully' };
+    } catch (e) {
+      throw e;
+    }
+  }
+  @Delete(':postId')
+  @ApiBearerAuth()
+  deletePost(@Param('postId') postId: number) {
+    try {
+      this.postService.deletePost(postId);
+      return { message: 'Post deleted successfully' };
     } catch (e) {
       throw e;
     }
