@@ -9,6 +9,7 @@ export class Post {
   @IsNotEmpty()
   @IsNumber()
   userId: number;
+  profilePicture: string;
   @IsNotEmpty()
   @IsString()
   description: string;
