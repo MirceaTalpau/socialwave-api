@@ -32,6 +32,8 @@ export class PostController {
   findAllByUser(@Req() req) {
     try {
       const userId = req.user;
+      console.log('User in request:', req.user); // Debugging
+
       return this.postService.findAllByUser(userId);
     } catch (e) {
       throw e;

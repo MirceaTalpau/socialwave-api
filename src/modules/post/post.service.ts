@@ -150,7 +150,7 @@ export class PostService {
           const user = await this.db
             .select()
             .from(usersTable)
-            .where(eq(usersTable.userId, rawPost[0].userId))
+            .where(eq(usersTable.userId, userId))
             .execute();
           if (!user.length) {
             throw new Error('User not found');
