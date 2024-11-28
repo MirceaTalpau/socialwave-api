@@ -49,19 +49,20 @@ export class PostController {
     @UploadedFiles() files: Express.Multer.File[], // This is to capture the uploaded files
   ) {
     try {
+      console.log(createPostDto);
       // Initialize empty arrays for images and videos
       const images: Express.Multer.File[] = [];
       const videos: Express.Multer.File[] = [];
-
-      // Loop through each file and categorize based on mimetype
-      files.forEach((file) => {
-        if (file.mimetype.startsWith('image/')) {
-          images.push(file); // Push the image file into images array
-        } else if (file.mimetype.startsWith('video/')) {
-          videos.push(file); // Push the video file into videos array
-        }
-      });
-
+      if (files) {
+        // Loop through each file and categorize based on mimetype
+        files.forEach((file) => {
+          if (file.mimetype.startsWith('image/')) {
+            images.push(file); // Push the image file into images array
+          } else if (file.mimetype.startsWith('video/')) {
+            videos.push(file); // Push the video file into videos array
+          }
+        });
+      }
       // Attach the files to the DTO
       createPostDto.images = images.length ? images : undefined;
       createPostDto.videos = videos.length ? videos : undefined;
