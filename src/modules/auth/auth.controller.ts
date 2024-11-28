@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from 'src/entities/user.entity';
@@ -6,14 +12,21 @@ import { LoginUserDto } from './dtos/login-user.dto';
 import { Public } from './auth.guard';
 import { VerifyEmailDto } from './dtos/verify-email.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 @Public()
 export class AuthController {
   constructor(private authService: AuthService) {}
   @Post('register')
-  async registerUser(@Body() user: CreateUserDto): Promise<User> {
-    console.log(user);
+  @UseInterceptors(AnyFilesInterceptor())
+  async registerUser(
+    @Body() user: CreateUserDto,
+    @UploadedFiles() file: Express.Multer.File, // This is to capture the uploaded files
+  ): Promise<User> {
+    if (file) {
+      user.profilePicture = file[0]; // Assign the filename to the user object
+    }
     return this.authService.registerUser(user);
   }
   @Post('login')
