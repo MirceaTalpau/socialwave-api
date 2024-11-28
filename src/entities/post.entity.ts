@@ -1,4 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ImagePost } from './image-post.entity';
+import { VideoPost } from './video-post.entity';
 
 export class Post {
   @IsNotEmpty()
@@ -13,4 +15,6 @@ export class Post {
   @IsNotEmpty()
   createdAt: Date;
   updatedAt: Date;
+  images: ImagePost[];
+  videos: VideoPost[];
 }

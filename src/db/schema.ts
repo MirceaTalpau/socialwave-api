@@ -31,3 +31,19 @@ export const postsTable = pgTable('posts', {
   createdAt: timestamp().notNull(),
   updatedAt: timestamp(),
 });
+
+export const imagesPostTable = pgTable('images_post', {
+  imagePostId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  postId: integer()
+    .notNull()
+    .references(() => postsTable.postId),
+  imageUrl: varchar().notNull(),
+});
+
+export const videosPostTable = pgTable('videos_post', {
+  videoPostId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  postId: integer()
+    .notNull()
+    .references(() => postsTable.postId),
+  videoUrl: varchar().notNull(),
+});

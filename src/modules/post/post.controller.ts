@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Req,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
@@ -37,8 +40,30 @@ export class PostController {
 
   @Post()
   @ApiBearerAuth()
-  createPost(@Req() req, @Body() createPostDto: CreatePostDto) {
+  @UseInterceptors(AnyFilesInterceptor())
+  createPost(
+    @Req() req,
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFiles() files: Express.Multer.File[], // This is to capture the uploaded files
+  ) {
     try {
+      // Initialize empty arrays for images and videos
+      const images: Express.Multer.File[] = [];
+      const videos: Express.Multer.File[] = [];
+
+      // Loop through each file and categorize based on mimetype
+      files.forEach((file) => {
+        if (file.mimetype.startsWith('image/')) {
+          images.push(file); // Push the image file into images array
+        } else if (file.mimetype.startsWith('video/')) {
+          videos.push(file); // Push the video file into videos array
+        }
+      });
+
+      // Attach the files to the DTO
+      createPostDto.images = images.length ? images : undefined;
+      createPostDto.videos = videos.length ? videos : undefined;
+
       const user = req.user;
       createPostDto.userId = user;
       this.postService.createPost(createPostDto);
