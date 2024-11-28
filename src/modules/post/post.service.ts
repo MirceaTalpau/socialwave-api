@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -196,10 +196,51 @@ export class PostService {
 
   async deletePost(postId: number) {
     try {
-      return await this.db
+      const post = await this.db
+        .select()
+        .from(postsTable)
+        .where(eq(postsTable.postId, postId))
+        .execute();
+      if (!post.length) {
+        throw new BadRequestException('Post not found');
+      }
+      const images = await this.db
+        .select()
+        .from(imagesPostTable)
+        .where(eq(imagesPostTable.postId, postId))
+        .execute();
+      await Promise.all(
+        images.map(async (image) => {
+          await this.db
+            .delete(imagesPostTable)
+            .where(eq(imagesPostTable.imagePostId, image.imagePostId))
+            .execute();
+          const imageKey = image.imageUrl.split('/').pop();
+          // console.log('imageKey', imageKey);
+          await this.fileUploadService.deleteFile(imageKey);
+        }),
+      );
+      const videos = await this.db
+        .select()
+        .from(videosPostTable)
+        .where(eq(videosPostTable.postId, postId))
+        .execute();
+      await Promise.all(
+        videos.map(async (video) => {
+          await this.db
+            .delete(videosPostTable)
+            .where(eq(videosPostTable.videoPostId, video.videoPostId))
+            .execute();
+          const videoKey = video.videoUrl.split('/').pop();
+          // console.log('videoKey', videoKey);
+          await this.fileUploadService.deleteFile(videoKey);
+        }),
+      );
+      await this.db
         .delete(postsTable)
         .where(eq(postsTable.postId, postId))
         .execute();
+      return { message: 'Post deleted successfully' };
     } catch (e) {
       throw e;
     }

@@ -76,8 +76,7 @@ export class PostController {
   @ApiBearerAuth()
   deletePost(@Param('postId') postId: number) {
     try {
-      this.postService.deletePost(postId);
-      return { message: 'Post deleted successfully' };
+      return this.postService.deletePost(postId);
     } catch (e) {
       throw e;
     }
