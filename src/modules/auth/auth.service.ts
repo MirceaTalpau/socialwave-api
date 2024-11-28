@@ -12,6 +12,7 @@ import { eq, sql } from 'drizzle-orm';
 import 'dotenv/config';
 import { VerifyEmailDto } from './dtos/verify-email.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { FileUploadService } from '../fileupload/fileupload.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
   constructor(
     private readonly emailService: EmailService,
     private readonly jwtService: JwtService,
+    private readonly fileUploadService: FileUploadService,
   ) {
     this.db = drizzle(process.env.DATABASE_URL!);
   }
@@ -28,6 +30,10 @@ export class AuthService {
       user.password = await this.hashPassword(user.password);
       const verificationToken = uuidv4();
       user.verificationToken = verificationToken;
+      const { key, url } = await this.fileUploadService.uploadSingleFile({
+        file: user.profilePicture[0],
+        isPublic: true,
+      });
       // Prepare data to match Drizzle schema
       const userToInsert = {
         ...user,
@@ -35,6 +41,7 @@ export class AuthService {
           user.birthdate instanceof Date
             ? user.birthdate.toISOString().split('T')[0] // Format as 'YYYY-MM-DD'
             : user.birthdate, // Assume it's already a valid date string
+        profilePicture: url,
       };
       const [newUser] = await this.db
         .insert(usersTable)
