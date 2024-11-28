@@ -11,7 +11,7 @@ export class CreatePostDto {
   createdAt: Date;
   @ApiProperty()
   updatedAt: Date;
-  // Updated for handling file uploads (Array of files)
+
   @ApiProperty()
   images?: Express.Multer.File[];
 
