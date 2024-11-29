@@ -12,7 +12,7 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
@@ -20,21 +20,20 @@ export class PostController {
 
   @Get(':postId')
   @ApiBearerAuth()
-  findOne(@Param('postId') postId: number) {
+  async findOne(@Param('postId') postId: number) {
     try {
-      return this.postService.findOne(postId);
+      return await this.postService.findOne(postId);
     } catch (e) {
       throw e;
     }
   }
   @Get()
   @ApiBearerAuth()
-  findAllByUser(@Req() req) {
+  async findAllByUser(@Req() req) {
     try {
       const userId = req.user;
-      console.log('User in request:', req.user); // Debugging
 
-      return this.postService.findAllByUser(userId);
+      return await this.postService.findAllByUser(userId);
     } catch (e) {
       throw e;
     }
@@ -43,7 +42,7 @@ export class PostController {
   @Post()
   @ApiBearerAuth()
   @UseInterceptors(AnyFilesInterceptor())
-  createPost(
+  async createPost(
     @Req() req,
     @Body() createPostDto: CreatePostDto,
     @UploadedFiles() files: Express.Multer.File[], // This is to capture the uploaded files
@@ -66,20 +65,20 @@ export class PostController {
       // Attach the files to the DTO
       createPostDto.images = images.length ? images : undefined;
       createPostDto.videos = videos.length ? videos : undefined;
-
       const user = req.user;
       createPostDto.userId = user;
-      this.postService.createPost(createPostDto);
-      return { message: 'Post created successfully' };
+      await this.postService.createPost(createPostDto);
+      console.log('User in request:', req.user); // Debugging
     } catch (e) {
-      throw e;
+      console.log('IN CONTROLLER', e);
+      throw new Error(e);
     }
   }
   @Delete(':postId')
   @ApiBearerAuth()
-  deletePost(@Param('postId') postId: number) {
+  async deletePost(@Param('postId') postId: number) {
     try {
-      return this.postService.deletePost(postId);
+      return await this.postService.deletePost(postId);
     } catch (e) {
       throw e;
     }

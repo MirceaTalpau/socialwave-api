@@ -27,26 +27,26 @@ export class AuthController {
     if (file) {
       user.profilePicture = file[0]; // Assign the filename to the user object
     }
-    return this.authService.registerUser(user);
+    return await this.authService.registerUser(user);
   }
   @Post('login')
   async loginUser(@Body() user: LoginUserDto) {
-    return this.authService.loginUser(user);
+    return await this.authService.loginUser(user);
   }
   @Post('resend-confirmation')
   async resendConfirmationEmail(@Body() body: { email: string }) {
-    return this.authService.resendVerificationEmail(body.email);
+    return await this.authService.resendVerificationEmail(body.email);
   }
   @Post('confirm-email')
   async confirmEmail(@Body() payload: VerifyEmailDto) {
-    return this.authService.confirmEmail(payload);
+    return await this.authService.confirmEmail(payload);
   }
   @Post('forgot-password')
   async forgotPassword(@Body() body: { email: string }) {
-    return this.authService.forgotPassword(body.email);
+    return await this.authService.forgotPassword(body.email);
   }
   @Post('reset-password')
   async resetPassword(@Body() data: ResetPasswordDto) {
-    return this.authService.resetPassword(data);
+    return await this.authService.resetPassword(data);
   }
 }

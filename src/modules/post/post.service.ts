@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import * as fs from 'fs';
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -13,6 +14,7 @@ import { FileUploadService } from '../fileupload/fileupload.service';
 import { Post } from 'src/entities/post.entity';
 import { ImagePost } from 'src/entities/image-post.entity';
 import { VideoPost } from 'src/entities/video-post.entity';
+import * as path from 'path';
 
 @Injectable()
 export class PostService {
@@ -22,58 +24,115 @@ export class PostService {
   }
   async createPost(createPostDto: CreatePostDto) {
     try {
-      // Ensure `createdAt` is a valid Date
-      if (!(createPostDto.createdAt instanceof Date)) {
-        createPostDto.createdAt = new Date(createPostDto.createdAt);
-      }
+      await this.db.transaction(async (tx) => {
+        // Ensure `createdAt` is a valid Date
+        if (!(createPostDto.createdAt instanceof Date)) {
+          createPostDto.createdAt = new Date(createPostDto.createdAt);
+        }
 
-      // Ensure `updatedAt` is a valid Date or set it to the current time
-      if (!createPostDto.updatedAt) {
-        createPostDto.updatedAt = new Date();
-      } else if (!(createPostDto.updatedAt instanceof Date)) {
-        createPostDto.updatedAt = new Date(createPostDto.updatedAt);
-      }
-      const newPost = new Post();
-      newPost.userId = createPostDto.userId;
-      newPost.description = createPostDto.description;
-      newPost.createdAt = createPostDto.createdAt;
-      newPost.updatedAt = createPostDto.updatedAt;
-      const insertedPost = await this.db
-        .insert(postsTable)
-        .values(newPost)
-        .returning()
-        .execute();
-      if (createPostDto.images) {
-        await Promise.all(
-          createPostDto.images.map(async (image) => {
-            const { key, url } = await this.fileUploadService.uploadSingleFile({
-              file: image,
-              isPublic: true,
-            });
-            const insertImage = new ImagePost();
-            insertImage.postId = insertedPost[0].postId;
-            insertImage.imageUrl = url;
-            await this.db.insert(imagesPostTable).values(insertImage).execute();
-          }),
-        );
-      }
-      if (createPostDto.videos) {
-        await Promise.all(
-          createPostDto.videos.map(async (video) => {
-            const { key, url } = await this.fileUploadService.uploadSingleFile({
-              file: video,
-              isPublic: true,
-            });
-            const insertVideo = new VideoPost();
-            insertVideo.postId = insertedPost[0].postId;
-            insertVideo.videoUrl = url;
-            await this.db.insert(videosPostTable).values(insertVideo).execute();
-          }),
-        );
-      }
-      console.log('insertedPost', insertedPost[0].postId);
+        // Ensure `updatedAt` is a valid Date or set it to the current time
+        if (!createPostDto.updatedAt) {
+          createPostDto.updatedAt = new Date();
+        } else if (!(createPostDto.updatedAt instanceof Date)) {
+          createPostDto.updatedAt = new Date(createPostDto.updatedAt);
+        }
+        const newPost = new Post();
+        newPost.userId = createPostDto.userId;
+        newPost.description = createPostDto.description;
+        newPost.createdAt = createPostDto.createdAt;
+        newPost.updatedAt = createPostDto.updatedAt;
+        const insertedPost = await tx
+          .insert(postsTable)
+          .values(newPost)
+          .returning()
+          .execute();
+        if (createPostDto.images) {
+          await Promise.all(
+            createPostDto.images.map(async (image) => {
+              const { key, url } =
+                await this.fileUploadService.uploadSingleFile({
+                  file: image,
+                  isPublic: true,
+                });
+              console.log('key', key);
+              const insertImage = new ImagePost();
+              insertImage.postId = insertedPost[0].postId;
+              insertImage.imageUrl = url;
+              await tx.insert(imagesPostTable).values(insertImage).execute();
+            }),
+          );
+        }
+        if (createPostDto.videos) {
+          await Promise.all(
+            createPostDto.videos.map(async (video) => {
+              // Define a temporary file path
+              const videoPath = path.join(
+                __dirname,
+                '..',
+                'uploads',
+                video.originalname,
+              );
+
+              // Write the video buffer to a file
+              fs.writeFileSync(videoPath, video.buffer);
+              console.log(`Video saved at: ${videoPath}`);
+
+              const outputPath = path.join(
+                __dirname,
+                '..',
+                'uploads',
+                'compressed',
+                video.originalname,
+              );
+              // Use a promise wrapper for the video compression
+              try {
+                await this.fileUploadService.compressVideo(
+                  videoPath,
+                  outputPath,
+                );
+                console.log(videoPath, outputPath);
+                const { key, url } =
+                  await this.fileUploadService.uploadSingleFile({
+                    file: {
+                      ...video,
+                      path: outputPath,
+                    },
+                    isPublic: true,
+                  });
+                // Delete the video file from disk after upload
+                fs.unlink(outputPath, (err) => {
+                  if (err) {
+                    console.error(`Failed to delete file: ${outputPath}`, err);
+                  } else {
+                    console.log(`Successfully deleted file: ${outputPath}`);
+                  }
+                });
+                fs.unlink(videoPath, (err) => {
+                  if (err) {
+                    console.error(`Failed to delete file: ${videoPath}`, err);
+                  } else {
+                    console.log(`Successfully deleted file: ${videoPath}`);
+                  }
+                });
+                const insertVideo = new VideoPost();
+                insertVideo.postId = insertedPost[0].postId;
+                insertVideo.videoUrl = url;
+                await tx.insert(videosPostTable).values(insertVideo).execute();
+              } catch (err) {
+                console.error('Error during video upload process:', err);
+                throw new Error(err);
+              }
+            }),
+          );
+        }
+        return {
+          message: 'Post created successfully',
+          postId: insertedPost[0].postId,
+        };
+      });
     } catch (e) {
-      throw e;
+      console.error('Error creating post::::::', e);
+      throw new BadRequestException(e.message);
     }
   }
   async findOne(postId: number) {
@@ -155,7 +214,6 @@ export class PostService {
           if (!user.length) {
             throw new Error('User not found');
           }
-          post.profilePicture = user[0].profilePicture;
           post.postId = rawPost.postId;
           post.userId = rawPost.userId;
           post.description = rawPost.description;

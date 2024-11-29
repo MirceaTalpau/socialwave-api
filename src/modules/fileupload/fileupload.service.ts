@@ -1,13 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import * as ffmpeg from 'fluent-ffmpeg';
+import * as fs from 'fs';
 
 import 'dotenv/config';
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
-  GetObjectCommand,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import * as path from 'path';
 
 @Injectable()
 export class FileUploadService {
@@ -101,5 +102,70 @@ export class FileUploadService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+
+  async compressVideo(
+    inputPath: string,
+    outputPath: string,
+  ): Promise<Express.Multer.File> {
+    return new Promise((resolve, reject) => {
+      try {
+        console.log('Compressing video:', inputPath);
+        console.log('Output path:', outputPath);
+        // Validate input paths
+        if (!fs.existsSync(inputPath)) {
+          return reject(new Error(`Input file does not exist: ${inputPath}`));
+        }
+
+        // Ensure output directory exists
+        const outputDir = path.dirname(outputPath);
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+
+        ffmpeg(inputPath)
+          .outputOptions('-vf', 'scale=-2:720')
+          .size('50%')
+          .output(outputPath)
+          .on('start', (commandLine) => {
+            console.log('Spawned FFmpeg with command: ' + commandLine);
+          })
+          .on('end', () => {
+            console.log(`Video successfully compressed: ${outputPath}`);
+
+            // Verify the output file was created
+            if (!fs.existsSync(outputPath)) {
+              return reject(
+                new Error(`Compressed video not found at: ${outputPath}`),
+              );
+            }
+
+            const compressedFileBuffer = fs.readFileSync(outputPath);
+
+            const file: Express.Multer.File = {
+              fieldname: '',
+              originalname: path.basename(outputPath),
+              encoding: '',
+              mimetype: 'video/mp4',
+              size: compressedFileBuffer.length,
+              buffer: compressedFileBuffer,
+              stream: fs.createReadStream(outputPath),
+              destination: '',
+              filename: path.basename(outputPath),
+              path: outputPath,
+            };
+
+            resolve(file);
+          })
+          .on('error', (err) => {
+            console.error('Error compressing video:', err);
+            reject(new Error(`Video compression failed: ${err.message}`));
+          })
+          .save(outputPath);
+      } catch (e) {
+        console.error('Unexpected error in video compression:', e);
+        reject(new Error(`Unexpected compression error: ${e.message}`));
+      }
+    });
   }
 }
