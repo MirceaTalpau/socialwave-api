@@ -22,10 +22,11 @@ export class AuthController {
   @UseInterceptors(AnyFilesInterceptor())
   async registerUser(
     @Body() user: CreateUserDto,
-    @UploadedFiles() file: Express.Multer.File, // This is to capture the uploaded files
+    @UploadedFiles() files: Express.Multer.File[], // This is to capture the uploaded files
   ): Promise<User> {
-    if (file) {
-      user.profilePicture = file[0]; // Assign the filename to the user object
+    console.log('File:', files);
+    if (files && files.length) {
+      user.profilePicture = files[0]; // Assign the filename to the user object
     }
     return await this.authService.registerUser(user);
   }

@@ -20,6 +20,6 @@ export class CreateUserDto {
   bio: string;
   @ApiProperty()
   @IsNotEmpty()
-  profilePicture: Express.Multer.File[];
+  profilePicture: Express.Multer.File;
   verificationToken?: string;
 }

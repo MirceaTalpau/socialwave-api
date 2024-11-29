@@ -30,8 +30,9 @@ export class AuthService {
       user.password = await this.hashPassword(user.password);
       const verificationToken = uuidv4();
       user.verificationToken = verificationToken;
+      console.log('userprofilepicture', user.profilePicture);
       const { key, url } = await this.fileUploadService.uploadSingleFile({
-        file: user.profilePicture[0],
+        file: user.profilePicture,
         isPublic: true,
       });
       // Prepare data to match Drizzle schema
@@ -199,6 +200,8 @@ export class AuthService {
         .select()
         .from(usersTable)
         .where(eq(usersTable.email, email));
+
+      console.log('User found:', userFound);
       if (!userFound[0]) {
         throw new UnauthorizedException('User not found');
       }
