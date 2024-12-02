@@ -46,9 +46,11 @@ export class PostService {
           .values(newPost)
           .returning()
           .execute();
+        console.log('insertedPost', insertedPost);
         if (createPostDto.images) {
           await Promise.all(
             createPostDto.images.map(async (image) => {
+              console.log('image', image);
               const { key, url } =
                 await this.fileUploadService.uploadSingleFile({
                   file: image,
@@ -99,6 +101,7 @@ export class PostService {
                     },
                     isPublic: true,
                   });
+                console.log('key', key);
                 // Delete the video file from disk after upload
                 fs.unlink(outputPath, (err) => {
                   if (err) {
@@ -246,6 +249,9 @@ export class PostService {
           posts.push(post);
         }),
       );
+      posts.sort((a, b) => {
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      });
       return posts;
     } catch (e) {
       throw e;
@@ -299,6 +305,19 @@ export class PostService {
         .where(eq(postsTable.postId, postId))
         .execute();
       return { message: 'Post deleted successfully' };
+    } catch (e) {
+      throw e;
+    }
+  }
+  async deleteAllPosts() {
+    try {
+      const posts = await this.db.select().from(postsTable).execute();
+      await Promise.all(
+        posts.map(async (post) => {
+          await this.deletePost(post.postId);
+        }),
+      );
+      return { message: 'All posts deleted successfully' };
     } catch (e) {
       throw e;
     }

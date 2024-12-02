@@ -10,6 +10,7 @@ import 'dotenv/config';
 import { PostModule } from './modules/post/post.module';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { FileuploadModule } from './modules/fileupload/fileupload.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { FileuploadModule } from './modules/fileupload/fileupload.module';
     EmailModule,
     PostModule,
     FileuploadModule,
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [AppService],

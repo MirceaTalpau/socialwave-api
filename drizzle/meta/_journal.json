@@ -43,6 +43,13 @@
       "when": 1732792492047,
       "tag": "0005_cold_mesmero",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1733126366956,
+      "tag": "0006_needy_kabuki",
+      "breakpoints": true
     }
   ]
 }

@@ -22,4 +22,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   profilePicture: Express.Multer.File;
   verificationToken?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

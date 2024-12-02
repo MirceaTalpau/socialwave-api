@@ -30,11 +30,13 @@ export class AuthService {
       user.password = await this.hashPassword(user.password);
       const verificationToken = uuidv4();
       user.verificationToken = verificationToken;
-      console.log('userprofilepicture', user.profilePicture);
+      user.createdAt = new Date();
+      user.updatedAt = new Date();
       const { key, url } = await this.fileUploadService.uploadSingleFile({
         file: user.profilePicture,
         isPublic: true,
       });
+      console.log('Key:', key);
       // Prepare data to match Drizzle schema
       const userToInsert = {
         ...user,

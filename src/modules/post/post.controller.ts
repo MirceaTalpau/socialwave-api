@@ -52,6 +52,7 @@ export class PostController {
       // Initialize empty arrays for images and videos
       const images: Express.Multer.File[] = [];
       const videos: Express.Multer.File[] = [];
+      console.log('Files:', files);
       if (files) {
         // Loop through each file and categorize based on mimetype
         files.forEach((file) => {
@@ -63,12 +64,14 @@ export class PostController {
         });
       }
       // Attach the files to the DTO
-      createPostDto.images = images.length ? images : undefined;
-      createPostDto.videos = videos.length ? videos : undefined;
+      createPostDto.images = images.length ? images : createPostDto.images;
+      createPostDto.videos = videos.length ? videos : createPostDto.videos;
+      console.log('Images:', createPostDto.images);
       const user = req.user;
       createPostDto.userId = user;
       await this.postService.createPost(createPostDto);
       console.log('User in request:', req.user); // Debugging
+      return { message: 'Post created successfully' };
     } catch (e) {
       console.log('IN CONTROLLER', e);
       throw new Error(e);
@@ -79,6 +82,15 @@ export class PostController {
   async deletePost(@Param('postId') postId: number) {
     try {
       return await this.postService.deletePost(postId);
+    } catch (e) {
+      throw e;
+    }
+  }
+  @Delete()
+  @ApiBearerAuth()
+  async deleteAllPosts() {
+    try {
+      return await this.postService.deleteAllPosts();
     } catch (e) {
       throw e;
     }

@@ -20,6 +20,8 @@ export const usersTable = pgTable('users', {
   isAdmin: boolean().notNull().default(false),
   verificationToken: varchar({ length: 255 }),
   resetToken: varchar({ length: 255 }),
+  createdAt: timestamp(),
+  updatedAt: timestamp(),
 });
 
 export const postsTable = pgTable('posts', {
