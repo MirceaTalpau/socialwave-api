@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { postsTable, usersTable } from 'src/db/schema';
+import { usersTable } from 'src/db/schema';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { PostService } from '../post/post.service';
 import 'dotenv/config';
