@@ -49,3 +49,15 @@ export const videosPostTable = pgTable('videos_post', {
     .references(() => postsTable.postId),
   videoUrl: varchar().notNull(),
 });
+
+export const followRequestsTable = pgTable('follow_requests', {
+  followerId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  followeeId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  isAccepted: boolean().notNull().default(false),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp(),
+});

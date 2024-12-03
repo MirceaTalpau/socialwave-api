@@ -11,6 +11,7 @@ import { PostModule } from './modules/post/post.module';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { FileuploadModule } from './modules/fileupload/fileupload.module';
 import { UserModule } from './modules/user/user.module';
+import { FollowModule } from './modules/follow/follow.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { UserModule } from './modules/user/user.module';
     PostModule,
     FileuploadModule,
     UserModule,
+    FollowModule,
   ],
   controllers: [AuthController],
   providers: [AppService],

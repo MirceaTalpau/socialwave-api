@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { usersTable } from 'src/db/schema';
+import { postsTable, usersTable } from 'src/db/schema';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { PostService } from '../post/post.service';
+import 'dotenv/config';
 
 @Injectable()
 export class UserService {
@@ -27,7 +28,10 @@ export class UserService {
       user.profilePicture = userDb[0].profilePicture;
       user.coverPicture = userDb[0].coverPicture;
       user.birthdate = userDb[0].birthdate;
-      const posts = await this.postService.findAllByUser(userId);
+      const posts = await this.db
+        .select()
+        .from(postsTable)
+        .where(eq(postsTable.userId, userId));
       user.posts = posts;
       return user;
     } catch (e) {
