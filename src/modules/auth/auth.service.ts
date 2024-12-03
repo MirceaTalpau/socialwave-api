@@ -25,6 +25,16 @@ export class AuthService {
     this.db = drizzle(process.env.DATABASE_URL!);
   }
 
+  async verifyToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      console.log('Decoded:', decoded);
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token', error);
+    }
+  }
+
   async registerUser(user: CreateUserDto): Promise<User> {
     try {
       user.password = await this.hashPassword(user.password);

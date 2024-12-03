@@ -18,6 +18,11 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 @Public()
 export class AuthController {
   constructor(private authService: AuthService) {}
+  @Post('verify-token')
+  async verifyToken(@Body() body: { token: string }) {
+    await this.authService.verifyToken(body.token);
+    return true;
+  }
   @Post('register')
   @UseInterceptors(AnyFilesInterceptor())
   async registerUser(

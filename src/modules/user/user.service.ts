@@ -28,10 +28,7 @@ export class UserService {
       user.profilePicture = userDb[0].profilePicture;
       user.coverPicture = userDb[0].coverPicture;
       user.birthdate = userDb[0].birthdate;
-      const posts = await this.db
-        .select()
-        .from(postsTable)
-        .where(eq(postsTable.userId, userId));
+      const posts = await this.postService.findAllByUser(userId);
       user.posts = posts;
       return user;
     } catch (e) {
