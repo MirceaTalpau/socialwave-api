@@ -203,9 +203,7 @@ export class PostService {
         .from(postsTable)
         .where(eq(postsTable.userId, userId))
         .execute();
-      if (!rawPosts.length) {
-        throw new Error('No posts found');
-      }
+
       await Promise.all(
         rawPosts.map(async (rawPost) => {
           const post = new Post();
