@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, ilike } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { usersTable } from 'src/db/schema';
 import { UserProfileDto } from './dtos/user-profile.dto';
@@ -31,6 +31,27 @@ export class UserService {
       const posts = await this.postService.findAllByUser(userId);
       user.posts = posts;
       return user;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async searchUser(searchParam: string) {
+    try {
+      console.log(searchParam);
+      const users = await this.db
+        .select({
+          userId: usersTable.userId,
+          name: usersTable.name,
+          profilePicture: usersTable.profilePicture,
+        })
+        .from(usersTable)
+        .where(
+          searchParam && searchParam.trim() !== ''
+            ? ilike(usersTable.name, `%${searchParam}%`)
+            : undefined, // Avoid passing null or invalid values
+        )
+        .limit(10);
+      return users;
     } catch (e) {
       throw e;
     }

@@ -9,6 +9,14 @@ export class UserController {
   @Get()
   async findOne(@Req() req) {
     const user = req.user;
+    console.log(user);
     return await this.userService.findOne(user);
+  }
+  @ApiBearerAuth()
+  @Get('search')
+  async searchUser(@Req() req) {
+    console.log(req.query.name);
+    const searchParam = req.query.name;
+    return await this.userService.searchUser(searchParam);
   }
 }
