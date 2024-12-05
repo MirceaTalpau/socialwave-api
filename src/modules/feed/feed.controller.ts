@@ -10,7 +10,7 @@ export class FeedController {
   @Get()
   async getFeed(@Req() req) {
     const user = req.user;
-    const feed = await this.feedService.getFeed(user.id);
+    const feed = await this.feedService.getFeed(user);
     return feed;
   }
 }
