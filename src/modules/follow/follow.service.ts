@@ -169,7 +169,7 @@ export class FollowService {
         .delete(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
-        .execute();
+        .where(eq(followRequestsTable.isAccepted, false));
       return { message: 'Follow request deleted' };
     } catch (error) {
       throw error;
