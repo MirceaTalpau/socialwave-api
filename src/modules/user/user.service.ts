@@ -19,7 +19,8 @@ export class UserService {
         .select()
         .from(usersTable)
         .where(eq(usersTable.userId, userId));
-      if (userDb[0].userId !== userId) {
+      console.log(userDb);
+      if (userDb[0].userId != userId) {
         const isFollowing = await this.db
           .select()
           .from(followRequestsTable)
