@@ -52,7 +52,7 @@ export class FollowService {
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
-      if (!followRequestExists) {
+      if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
       await this.db
@@ -74,7 +74,7 @@ export class FollowService {
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
-      if (!followRequestExists) {
+      if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
       await this.db
@@ -95,7 +95,7 @@ export class FollowService {
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
-      if (!followRequestExists) {
+      if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
       await this.db
