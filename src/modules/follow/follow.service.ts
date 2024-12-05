@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import { RequestFollowDto } from './dtos/request-follow.dto';
-import { followRequestsTable } from 'src/db/schema';
+import { followRequestsTable, usersTable } from 'src/db/schema';
 import { eq } from 'drizzle-orm';
 import { FollowRequest } from 'src/entities/follow-request.entity';
+import { FollowResponseDto } from './dtos/follow-response.dto';
 @Injectable()
 export class FollowService {
   private readonly db;
@@ -31,17 +32,36 @@ export class FollowService {
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followeeId, userId))
         .where(eq(followRequestsTable.isAccepted, false));
-      return followRequests;
+      const user = await this.db
+        .select({
+          profilePic: usersTable.profilePicture,
+          username: usersTable.name,
+        })
+        .from(usersTable)
+        .where(eq(usersTable.userId, followRequests[0].followerId));
+      const response = new FollowResponseDto();
+      response.followerId = followRequests[0].followerId;
+      response.followeeId = followRequests[0].followeeId;
+      response.createdAt = followRequests[0].createdAt;
+      response.isAccepted = followRequests[0].isAccepted;
+      response.updatedAt = followRequests[0].updatedAt;
+      response.followerProfilePic = user[0].profilePic;
+      response.followerUsername = user[0].username;
+      return response;
     } catch (error) {
       throw error;
     }
   }
   async requestFollow(followRequest: RequestFollowDto) {
     try {
+      if (followRequest.followerId === followRequest.followeeId) {
+        return { message: 'Cannot follow yourself' };
+      }
       const follow = new FollowRequest();
       follow.followerId = followRequest.followerId;
       follow.followeeId = followRequest.followeeId;
       follow.createdAt = new Date();
+
       const followRequestExists = await this.db
         .select()
         .from(followRequestsTable)
