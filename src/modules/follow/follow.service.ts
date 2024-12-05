@@ -12,6 +12,18 @@ export class FollowService {
     this.db = drizzle(process.env.DATABASE_URL);
   }
 
+  async getFollowStatus(followRequest: RequestFollowDto) {
+    const follow = await this.db
+      .select()
+      .from(followRequestsTable)
+      .where(eq(followRequestsTable.followerId, followRequest.followerId))
+      .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+    if (follow.length > 0) {
+      return { message: 'Following' };
+    }
+    return { message: 'Not following' };
+  }
+
   async getFollowRequests(userId: number) {
     try {
       const followRequests = await this.db

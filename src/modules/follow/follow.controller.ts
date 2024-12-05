@@ -6,11 +6,33 @@ import { FollowService } from './follow.service';
 export class FollowController {
   constructor(private readonly followService: FollowService) {}
 
-  @Get()
+  @Get('follow-requests')
   async getFollowRequests(@Req() req) {
     const user = req.user;
     return await this.followService.getFollowRequests(user);
   }
+
+  @Get('followers')
+  async getFollowers(@Req() req) {
+    const user = req.user;
+    return await this.followService.getFollowers(user);
+  }
+
+  @Get('following')
+  async getFollowing(@Req() req) {
+    const user = req.user;
+    return await this.followService.getFollowing(user);
+  }
+
+  @Get(':userId')
+  async getFollowStatus(@Req() req, userId: number) {
+    const user = req.user;
+    const followRequest = new RequestFollowDto();
+    followRequest.followerId = user;
+    followRequest.followeeId = userId;
+    return await this.followService.getFollowStatus(user, userId);
+  }
+
   @Post('request')
   async requestFollow(@Req() req, @Body() followee: { followee: number }) {
     const user = req.user;

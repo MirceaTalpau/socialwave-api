@@ -56,7 +56,7 @@ export class UserService {
       throw e;
     }
   }
-  async searchUser(searchParam: string) {
+  async searchUser(searchParam: string, userId: number) {
     try {
       console.log(searchParam);
       const users = await this.db
@@ -72,7 +72,8 @@ export class UserService {
             : undefined, // Avoid passing null or invalid values
         )
         .limit(10);
-      return users;
+      const filteredUsers = users.filter((user) => user.userId !== userId);
+      return filteredUsers;
     } catch (e) {
       throw e;
     }

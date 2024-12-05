@@ -21,6 +21,7 @@ export class UserController {
   @Get('search')
   async searchUser(@Req() req) {
     const searchParam = req.query.name;
-    return await this.userService.searchUser(searchParam);
+    const user = req.user;
+    return await this.userService.searchUser(searchParam, user);
   }
 }
