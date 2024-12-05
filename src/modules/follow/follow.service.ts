@@ -138,16 +138,15 @@ export class FollowService {
       if (followRequest.followerId === followRequest.followeeId) {
         return { message: 'Cannot follow yourself' };
       }
-      console.log(followRequest);
       const followRequestExists = await this.db
         .select()
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
-        .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, false));
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
-      console.log(followRequestExists);
       if (followRequestExists[0].isAccepted) {
         return { message: 'Follow request already accepted' };
       }
