@@ -13,7 +13,7 @@ export class UserController {
     return await this.userService.findOne(user);
   }
   @ApiBearerAuth()
-  @Get(':id')
+  @Get('id/:id')
   async findOneById(@Req() req) {
     const userId = req.params.id;
     return await this.userService.findOne(userId);
