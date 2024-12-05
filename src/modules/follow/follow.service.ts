@@ -87,4 +87,25 @@ export class FollowService {
       throw error;
     }
   }
+
+  async unfollow(followRequest: RequestFollowDto) {
+    try {
+      const followRequestExists = await this.db
+        .select()
+        .from(followRequestsTable)
+        .where(eq(followRequestsTable.followerId, followRequest.followerId))
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+      if (!followRequestExists) {
+        return { message: 'Follow request not found' };
+      }
+      await this.db
+        .delete(followRequestsTable)
+        .where(eq(followRequestsTable.followerId, followRequest.followerId))
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .execute();
+      return { message: 'Unfollowed' };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

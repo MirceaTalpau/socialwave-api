@@ -12,17 +12,37 @@ export class FollowController {
     return await this.followService.getFollowRequests(user);
   }
   @Post('request')
-  async requestFollow(@Body() followRequest: RequestFollowDto) {
+  async requestFollow(@Req() req, @Body() userId: number) {
+    const user = req.user;
+    const followRequest = new RequestFollowDto();
+    followRequest.followerId = user;
+    followRequest.followeeId = userId;
     return await this.followService.requestFollow(followRequest);
   }
 
   @Post('accept')
-  async acceptFollow(@Body() followRequest: RequestFollowDto) {
+  async acceptFollow(@Req() req, @Body() userId: number) {
+    const followRequest = new RequestFollowDto();
+    const user = req.user;
+    followRequest.followerId = userId;
+    followRequest.followeeId = user;
     return await this.followService.acceptFollow(followRequest);
   }
 
   @Post('reject')
-  async rejectFollow(@Body() followRequest: RequestFollowDto) {
+  async rejectFollow(@Req() req, @Body() userId: number) {
+    const followRequest = new RequestFollowDto();
+    const user = req.user;
+    followRequest.followerId = userId;
+    followRequest.followeeId = user;
     return await this.followService.rejectFollow(followRequest);
+  }
+  @Post('unfollow')
+  async unfollow(@Req() req, @Body() userId: number) {
+    const followRequest = new RequestFollowDto();
+    const user = req.user;
+    followRequest.followerId = user;
+    followRequest.followeeId = userId;
+    return await this.followService.unfollow(followRequest);
   }
 }
