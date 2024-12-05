@@ -5,7 +5,6 @@ import { RequestFollowDto } from './dtos/request-follow.dto';
 import { followRequestsTable, usersTable } from 'src/db/schema';
 import { eq } from 'drizzle-orm';
 import { FollowRequest } from 'src/entities/follow-request.entity';
-import { FollowResponseDto } from './dtos/follow-response.dto';
 @Injectable()
 export class FollowService {
   private readonly db;
@@ -14,11 +13,15 @@ export class FollowService {
   }
 
   async getFollowStatus(followRequest: RequestFollowDto) {
+    if (followRequest.followerId === followRequest.followeeId) {
+      return { message: 'You cannot follow yourself!' };
+    }
     const follow = await this.db
       .select()
       .from(followRequestsTable)
       .where(eq(followRequestsTable.followerId, followRequest.followerId))
-      .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+      .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+      .where(eq(followRequestsTable.isAccepted, true));
     if (follow.length > 0) {
       return { message: 'Following' };
     }
@@ -36,7 +39,6 @@ export class FollowService {
         )
         .where(eq(followRequestsTable.followeeId, userId))
         .where(eq(followRequestsTable.isAccepted, false));
-
       return followRequests;
     } catch (error) {
       throw error;
@@ -69,6 +71,9 @@ export class FollowService {
   }
   async acceptFollow(followRequest: RequestFollowDto) {
     try {
+      if (followRequest.followerId === followRequest.followeeId) {
+        return { message: 'Cannot follow yourself' };
+      }
       const followRequestExists = await this.db
         .select()
         .from(followRequestsTable)
@@ -91,6 +96,9 @@ export class FollowService {
 
   async rejectFollow(followRequest: RequestFollowDto) {
     try {
+      if (followRequest.followerId === followRequest.followeeId) {
+        return { message: 'Cannot follow yourself' };
+      }
       const followRequestExists = await this.db
         .select()
         .from(followRequestsTable)
