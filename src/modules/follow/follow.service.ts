@@ -30,24 +30,14 @@ export class FollowService {
       const followRequests = await this.db
         .select()
         .from(followRequestsTable)
+        .innerJoin(
+          usersTable,
+          eq(followRequestsTable.followerId, usersTable.userId),
+        )
         .where(eq(followRequestsTable.followeeId, userId))
         .where(eq(followRequestsTable.isAccepted, false));
-      const user = await this.db
-        .select({
-          profilePic: usersTable.profilePicture,
-          username: usersTable.name,
-        })
-        .from(usersTable)
-        .where(eq(usersTable.userId, followRequests[0].followerId));
-      const response = new FollowResponseDto();
-      response.followerId = followRequests[0].followerId;
-      response.followeeId = followRequests[0].followeeId;
-      response.createdAt = followRequests[0].createdAt;
-      response.isAccepted = followRequests[0].isAccepted;
-      response.updatedAt = followRequests[0].updatedAt;
-      response.followerProfilePic = user[0].profilePic;
-      response.followerUsername = user[0].username;
-      return response;
+
+      return followRequests;
     } catch (error) {
       throw error;
     }
