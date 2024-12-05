@@ -30,7 +30,7 @@ export class FollowController {
     const followRequest = new RequestFollowDto();
     followRequest.followerId = user;
     followRequest.followeeId = userId;
-    return await this.followService.getFollowStatus(user, userId);
+    return await this.followService.getFollowStatus(followRequest);
   }
 
   @Post('request')
