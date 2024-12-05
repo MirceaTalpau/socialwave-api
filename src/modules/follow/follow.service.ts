@@ -31,7 +31,13 @@ export class FollowService {
   async getFollowRequests(userId: number) {
     try {
       const followRequests = await this.db
-        .select()
+        .select({
+          userId: usersTable.userId,
+          name: usersTable.name,
+          email: usersTable.email,
+          profilePicture: usersTable.profilePicture,
+          createdAt: followRequestsTable.createdAt,
+        })
         .from(followRequestsTable)
         .innerJoin(
           usersTable,
