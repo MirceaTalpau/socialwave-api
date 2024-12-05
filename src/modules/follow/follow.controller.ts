@@ -12,17 +12,17 @@ export class FollowController {
     return await this.followService.getFollowRequests(user);
   }
 
-  @Get('followers')
-  async getFollowers(@Req() req) {
-    const user = req.user;
-    return await this.followService.getFollowers(user);
-  }
+  // @Get('followers')
+  // async getFollowers(@Req() req) {
+  //   const user = req.user;
+  //   return await this.followService.getFollowers(user);
+  // }
 
-  @Get('following')
-  async getFollowing(@Req() req) {
-    const user = req.user;
-    return await this.followService.getFollowing(user);
-  }
+  // @Get('following')
+  // async getFollowing(@Req() req) {
+  //   const user = req.user;
+  //   return await this.followService.getFollowing(user);
+  // }
 
   @Get(':userId')
   async getFollowStatus(@Req() req, userId: number) {
