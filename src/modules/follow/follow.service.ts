@@ -15,7 +15,8 @@ export class FollowService {
   async getFollowRequests(userId: number) {
     try {
       const followRequests = await this.db
-        .select(followRequestsTable)
+        .select()
+        .from(followRequestsTable)
         .where(eq(followRequestsTable.followeeId, userId))
         .where(eq(followRequestsTable.isAccepted, false));
       return followRequests;
@@ -30,7 +31,8 @@ export class FollowService {
       follow.followeeId = followRequest.followeeId;
       follow.createdAt = new Date();
       const followRequestExists = await this.db
-        .select(followRequestsTable)
+        .select()
+        .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, follow.followerId))
         .where(eq(followRequestsTable.followeeId, follow.followeeId));
       if (followRequestExists) {
@@ -46,7 +48,8 @@ export class FollowService {
   async acceptFollow(followRequest: RequestFollowDto) {
     try {
       const followRequestExists = await this.db
-        .select(followRequestsTable)
+        .select()
+        .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
       if (!followRequestExists) {
@@ -67,7 +70,8 @@ export class FollowService {
   async rejectFollow(followRequest: RequestFollowDto) {
     try {
       const followRequestExists = await this.db
-        .select(followRequestsTable)
+        .select()
+        .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
       if (!followRequestExists) {
