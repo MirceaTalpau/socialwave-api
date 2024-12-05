@@ -12,6 +12,8 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import { FileuploadModule } from './modules/fileupload/fileupload.module';
 import { UserModule } from './modules/user/user.module';
 import { FollowModule } from './modules/follow/follow.module';
+import { FeedController } from './modules/feed/feed.controller';
+import { FeedModule } from './modules/feed/feed.module';
 
 @Module({
   imports: [
@@ -49,8 +51,9 @@ import { FollowModule } from './modules/follow/follow.module';
     FileuploadModule,
     UserModule,
     FollowModule,
+    FeedModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, FeedController],
   providers: [AppService],
 })
 export class AppModule {
