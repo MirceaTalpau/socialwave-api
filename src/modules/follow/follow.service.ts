@@ -25,6 +25,14 @@ export class FollowService {
     if (follow.length > 0) {
       return { message: 'Following' };
     }
+    const followRequestExists = await this.db
+      .select()
+      .from(followRequestsTable)
+      .where(eq(followRequestsTable.followerId, followRequest.followerId))
+      .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+    if (followRequestExists.length > 0) {
+      return { message: 'Follow request sent' };
+    }
     return { message: 'Not following' };
   }
 
