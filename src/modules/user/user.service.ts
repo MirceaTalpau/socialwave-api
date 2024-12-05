@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq, ilike } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { usersTable } from 'src/db/schema';
+import { followRequestsTable, usersTable } from 'src/db/schema';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { PostService } from '../post/post.service';
 import 'dotenv/config';
@@ -19,6 +19,26 @@ export class UserService {
         .select()
         .from(usersTable)
         .where(eq(usersTable.userId, userId));
+      if (userDb[0].userId !== userId) {
+        const isFollowing = await this.db
+          .select()
+          .from(followRequestsTable)
+          .where(eq(followRequestsTable.followerId, userId))
+          .where(eq(followRequestsTable.followeeId, userDb[0].userId))
+          .where(eq(followRequestsTable.isAccepted, true));
+        if (isFollowing.length === 0) {
+          user.userId = userDb[0].userId;
+          user.email = userDb[0].email;
+          user.name = userDb[0].name;
+          user.createdAt = userDb[0].createdAt;
+          user.updatedAt = userDb[0].updatedAt;
+          user.bio = userDb[0].bio;
+          user.profilePicture = userDb[0].profilePicture;
+          user.coverPicture = userDb[0].coverPicture;
+          user.birthdate = userDb[0].birthdate;
+          return user;
+        }
+      }
       user.userId = userDb[0].userId;
       user.email = userDb[0].email;
       user.name = userDb[0].name;
