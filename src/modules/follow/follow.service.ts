@@ -46,6 +46,7 @@ export class FollowService {
           email: usersTable.email,
           profilePicture: usersTable.profilePicture,
           createdAt: followRequestsTable.createdAt,
+          isAccepted: followRequestsTable.isAccepted,
         })
         .from(followRequestsTable)
         .innerJoin(
