@@ -35,7 +35,7 @@ export class FollowService {
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, follow.followerId))
         .where(eq(followRequestsTable.followeeId, follow.followeeId));
-      if (followRequestExists) {
+      if (followRequestExists.length > 0) {
         return { message: 'Follow request already sent' };
       }
 
