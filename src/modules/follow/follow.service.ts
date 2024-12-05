@@ -50,7 +50,7 @@ export class FollowService {
         .from(followRequestsTable)
         .innerJoin(
           usersTable,
-          eq(followRequestsTable.followerId, usersTable.userId),
+          eq(followRequestsTable.followeeId, usersTable.userId),
         )
         .where(eq(followRequestsTable.followeeId, userId))
         .where(eq(followRequestsTable.isAccepted, false));
