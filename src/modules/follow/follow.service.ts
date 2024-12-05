@@ -16,6 +16,7 @@ export class FollowService {
     if (followRequest.followerId === followRequest.followeeId) {
       return { message: 'You cannot follow yourself!' };
     }
+    console.log(followRequest);
     const follow = await this.db
       .select()
       .from(followRequestsTable)

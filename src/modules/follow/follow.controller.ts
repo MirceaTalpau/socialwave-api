@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { RequestFollowDto } from './dtos/request-follow.dto';
 import { FollowService } from './follow.service';
 
@@ -25,11 +25,11 @@ export class FollowController {
   // }
 
   @Get(':userId')
-  async getFollowStatus(@Req() req, userId: number) {
+  async getFollowStatus(@Req() req, @Param() payload: { userId: number }) {
     const user = req.user;
     const followRequest = new RequestFollowDto();
     followRequest.followerId = user;
-    followRequest.followeeId = userId;
+    followRequest.followeeId = payload.userId;
     return await this.followService.getFollowStatus(followRequest);
   }
 
