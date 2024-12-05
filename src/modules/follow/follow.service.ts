@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import { RequestFollowDto } from './dtos/request-follow.dto';
 import { followRequestsTable, usersTable } from 'src/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, is } from 'drizzle-orm';
 import { FollowRequest } from 'src/entities/follow-request.entity';
 @Injectable()
 export class FollowService {
@@ -90,6 +90,7 @@ export class FollowService {
       if (followRequest.followerId === followRequest.followeeId) {
         return { message: 'Cannot follow yourself' };
       }
+      console.log(followRequest);
       const followRequestExists = await this.db
         .select()
         .from(followRequestsTable)
@@ -98,11 +99,16 @@ export class FollowService {
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
+      console.log(followRequestExists);
+      if (followRequestExists[0].isAccepted) {
+        return { message: 'Follow request already accepted' };
+      }
       await this.db
         .update(followRequestsTable)
         .set({ isAccepted: true, updatedAt: new Date() })
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, false))
         .execute();
       return { message: 'Follow request accepted' };
     } catch (error) {
