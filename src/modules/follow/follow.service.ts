@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import { RequestFollowDto } from './dtos/request-follow.dto';
 import { followRequestsTable, usersTable } from 'src/db/schema';
-import { eq, is } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { FollowRequest } from 'src/entities/follow-request.entity';
 @Injectable()
 export class FollowService {
@@ -35,6 +35,54 @@ export class FollowService {
       return { message: 'Follow request sent' };
     }
     return { message: 'Not following' };
+  }
+
+  async getFollowers(userId: number) {
+    try {
+      const followers = await this.db
+        .select({
+          userId: usersTable.userId,
+          name: usersTable.name,
+          email: usersTable.email,
+          profilePicture: usersTable.profilePicture,
+          createdAt: followRequestsTable.createdAt,
+          isAccepted: followRequestsTable.isAccepted,
+        })
+        .from(followRequestsTable)
+        .innerJoin(
+          usersTable,
+          eq(followRequestsTable.followerId, usersTable.userId),
+        )
+        .where(eq(followRequestsTable.followeeId, userId))
+        .where(eq(followRequestsTable.isAccepted, true));
+      return followers;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFollowing(userId: number) {
+    try {
+      const following = await this.db
+        .select({
+          userId: usersTable.userId,
+          name: usersTable.name,
+          email: usersTable.email,
+          profilePicture: usersTable.profilePicture,
+          createdAt: followRequestsTable.createdAt,
+          isAccepted: followRequestsTable.isAccepted,
+        })
+        .from(followRequestsTable)
+        .innerJoin(
+          usersTable,
+          eq(followRequestsTable.followeeId, usersTable.userId),
+        )
+        .where(eq(followRequestsTable.followerId, userId))
+        .where(eq(followRequestsTable.isAccepted, true));
+      return following;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getFollowRequests(userId: number) {
