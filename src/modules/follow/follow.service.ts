@@ -203,6 +203,7 @@ export class FollowService {
         .delete(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, true))
         .execute();
       return { message: 'Unfollowed' };
     } catch (error) {
