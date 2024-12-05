@@ -172,7 +172,9 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
-        .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, false));
+
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
@@ -180,6 +182,7 @@ export class FollowService {
         .delete(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
         .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, false))
         .execute();
       return { message: 'Follow request rejected' };
     } catch (error) {
