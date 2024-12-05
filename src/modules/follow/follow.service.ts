@@ -194,7 +194,8 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(eq(followRequestsTable.followerId, followRequest.followerId))
-        .where(eq(followRequestsTable.followeeId, followRequest.followeeId));
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, true));
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
       }
