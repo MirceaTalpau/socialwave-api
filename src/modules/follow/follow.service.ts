@@ -153,4 +153,26 @@ export class FollowService {
       throw error;
     }
   }
+
+  async deleteFollowRequest(followRequest: RequestFollowDto) {
+    try {
+      const followRequestExists = await this.db
+        .select()
+        .from(followRequestsTable)
+        .where(eq(followRequestsTable.followerId, followRequest.followerId))
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .where(eq(followRequestsTable.isAccepted, false));
+      if (followRequestExists.length == 0) {
+        return { message: 'Follow request not found' };
+      }
+      await this.db
+        .delete(followRequestsTable)
+        .where(eq(followRequestsTable.followerId, followRequest.followerId))
+        .where(eq(followRequestsTable.followeeId, followRequest.followeeId))
+        .execute();
+      return { message: 'Follow request deleted' };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { RequestFollowDto } from './dtos/request-follow.dto';
 import { FollowService } from './follow.service';
 
@@ -68,5 +76,16 @@ export class FollowController {
     followRequest.followerId = user;
     followRequest.followeeId = followee.followee;
     return await this.followService.unfollow(followRequest);
+  }
+  @Delete('delete')
+  async deleteFollowRequest(
+    @Req() req,
+    @Body() followee: { followee: number },
+  ) {
+    const followRequest = new RequestFollowDto();
+    const user = req.user;
+    followRequest.followerId = followee.followee;
+    followRequest.followeeId = user;
+    return await this.followService.deleteFollowRequest(followRequest);
   }
 }
