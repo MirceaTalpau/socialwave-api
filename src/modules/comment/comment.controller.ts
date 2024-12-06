@@ -10,21 +10,22 @@ export class CommentController {
   @Post()
   async createComment(@Req() req, @Body() comment: CreateCommentDto) {
     const user = req.user;
-    comment.userId = user.userId;
+    console.log(user);
+    comment.userId = user;
     return await this.commentService.createComment(comment);
   }
 
   @Put()
   async updateComment(@Req() req, @Body() comment: UpdateCommentDto) {
     const user = req.user;
-    comment.userId = user.userId;
+    comment.userId = user;
     return await this.commentService.updateComment(comment);
   }
 
   @Delete()
   async deleteComment(@Req() req, @Body() comment: UpdateCommentDto) {
     const user = req.user;
-    comment.userId = user.userId;
+    comment.userId = user;
     return await this.commentService.deleteComment(
       comment.commentId,
       comment.userId,
