@@ -22,18 +22,20 @@ export class UserService {
         .select()
         .from(usersTable)
         .where(eq(usersTable.userId, userId));
+      console.log(userDb);
+      console.log(currentUserId);
       if (userDb[0].userId != currentUserId) {
         const isFollowing = await this.db
           .select()
           .from(followRequestsTable)
           .where(
             and(
-              eq(followRequestsTable.followerId, userId),
-              eq(followRequestsTable.followeeId, userDb[0].userId),
+              eq(followRequestsTable.followerId, currentUserId),
+              eq(followRequestsTable.followeeId, userId),
               eq(followRequestsTable.isAccepted, true),
             ),
           );
-        if (isFollowing.length === 0) {
+        if (isFollowing.length == 0) {
           user.userId = userDb[0].userId;
           user.email = userDb[0].email;
           user.name = userDb[0].name;
