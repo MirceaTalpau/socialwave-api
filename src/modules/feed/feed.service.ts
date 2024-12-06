@@ -56,6 +56,7 @@ export class FeedService {
         .where(eq(videosPostTable.postId, post.postId));
       feed.push({
         userId: post.userId,
+        postId: post.postId,
         name: post.name,
         profilePicture: post.profilePicture,
         createdAt: post.createdAt,
