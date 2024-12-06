@@ -50,6 +50,20 @@ export const videosPostTable = pgTable('videos_post', {
   videoUrl: varchar().notNull(),
 });
 
+export const commentsTable = pgTable('comments', {
+  commentId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  parentId: integer().references(() => commentsTable.commentId),
+  postId: integer()
+    .notNull()
+    .references(() => postsTable.postId),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  text: varchar().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp(),
+});
+
 export const followRequestsTable = pgTable('follow_requests', {
   followerId: integer()
     .notNull()
@@ -70,8 +84,23 @@ export const messagesTable = pgTable('messages', {
   receiverId: integer()
     .notNull()
     .references(() => usersTable.userId),
+  chatId: integer()
+    .notNull()
+    .references(() => chatTable.chatId),
   text: varchar().notNull(),
   isRead: boolean().notNull().default(false),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp(),
+});
+
+export const chatTable = pgTable('chat', {
+  chatId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  user1Id: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  user2Id: integer()
+    .notNull()
+    .references(() => usersTable.userId),
   createdAt: timestamp().notNull(),
   updatedAt: timestamp(),
 });

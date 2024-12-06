@@ -64,6 +64,13 @@
       "when": 1733481567479,
       "tag": "0008_unknown_grandmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1733489144447,
+      "tag": "0009_aspiring_speedball",
+      "breakpoints": true
     }
   ]
 }

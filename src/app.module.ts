@@ -15,6 +15,7 @@ import { FollowModule } from './modules/follow/follow.module';
 import { FeedController } from './modules/feed/feed.controller';
 import { FeedModule } from './modules/feed/feed.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ChatModule } from './modules/chat/chat.module';
     FollowModule,
     FeedModule,
     ChatModule,
+    CommentModule,
   ],
   controllers: [AuthController, FeedController],
   providers: [AppService],

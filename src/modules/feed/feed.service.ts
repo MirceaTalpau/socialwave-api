@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import {
+  commentsTable,
   followRequestsTable,
   imagesPostTable,
   postsTable,
@@ -42,6 +43,11 @@ export class FeedService {
       .orderBy(postsTable.createdAt, 'desc');
     const feed: FeedResponseDto[] = [];
     for (const post of posts) {
+      const comments = await this.db
+        .select()
+        .from(commentsTable)
+        .where(eq(commentsTable.postId, post.postId));
+
       const images = await this.db
         .select({
           images: imagesPostTable.imageUrl,
@@ -63,6 +69,14 @@ export class FeedService {
         description: post.description,
         images: images.map((image) => image.images),
         videos: videos.map((video) => video.videos),
+        comments: comments.map((comment) => ({
+          commentId: comment.commentId,
+          parentId: comment.parentId,
+          postId: comment.postId,
+          userId: comment.userId,
+          text: comment.text,
+          createdAt: comment.createdAt,
+        })),
       });
     }
 

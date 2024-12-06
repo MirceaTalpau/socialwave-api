@@ -1,3 +1,5 @@
+import { CommentResponseDto } from 'src/modules/comment/dtos/CommentResponse.dto';
+
 export class FeedResponseDto {
   userId: number;
   postId: number;
@@ -7,4 +9,5 @@ export class FeedResponseDto {
   description: string;
   images: string[];
   videos: string[];
+  comments: CommentResponseDto[];
 }

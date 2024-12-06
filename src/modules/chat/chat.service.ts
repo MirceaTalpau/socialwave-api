@@ -17,6 +17,7 @@ export class ChatService {
       receiverId: message.receiverId,
       text: message.text,
       createdAt: new Date(),
+      chatId: message.chatId,
     });
     return savedMessage;
   }
