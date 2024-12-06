@@ -21,7 +21,8 @@ export class CommentService {
       newComment.userId = comment.userId;
       newComment.text = comment.text;
       newComment.createdAt = new Date();
-      return await this.db.insert(commentsTable).values(newComment);
+      await this.db.insert(commentsTable).values(newComment);
+      return { message: 'Comment created successfully' };
     } catch (error) {
       throw error;
     }
@@ -39,7 +40,7 @@ export class CommentService {
   }
   async updateComment(comment: UpdateCommentDto) {
     try {
-      return await this.db
+      await this.db
         .update(commentsTable)
         .set({
           text: comment.text,
@@ -50,13 +51,14 @@ export class CommentService {
             eq(commentsTable.userId, comment.userId),
           ),
         );
+      return { message: 'Comment updated successfully' };
     } catch (error) {
       throw error;
     }
   }
   async deleteComment(commentId: number, userId: number) {
     try {
-      return await this.db
+      await this.db
         .delete(commentsTable)
         .where(
           and(
@@ -64,6 +66,7 @@ export class CommentService {
             eq(commentsTable.userId, userId),
           ),
         );
+      return { message: 'Comment deleted successfully' };
     } catch (error) {
       throw error;
     }
