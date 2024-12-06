@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -13,9 +13,9 @@ export class UserController {
   }
   @ApiBearerAuth()
   @Get('id/:id')
-  async findOneById(@Req() req) {
-    const userId = req.params.id;
-    return await this.userService.findOne(userId);
+  async findOneById(@Req() req, @Param() payload: { id: number }) {
+    const userId = req.user;
+    return await this.userService.findOne(userId, payload.id);
   }
   @ApiBearerAuth()
   @Get('search')

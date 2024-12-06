@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { eq, ilike } from 'drizzle-orm';
+import { and, eq, ilike } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { followRequestsTable, usersTable } from 'src/db/schema';
 import { UserProfileDto } from './dtos/user-profile.dto';
@@ -12,21 +12,27 @@ export class UserService {
   constructor(private readonly postService: PostService) {
     this.db = drizzle(process.env.DATABASE_URL!);
   }
-  async findOne(userId: number) {
+  async findOne(currentUserId: number, userId?: number) {
     try {
       const user = new UserProfileDto();
+      if (!userId) {
+        userId = currentUserId;
+      }
       const userDb = await this.db
         .select()
         .from(usersTable)
         .where(eq(usersTable.userId, userId));
-      console.log(userDb);
-      if (userDb[0].userId != userId) {
+      if (userDb[0].userId != currentUserId) {
         const isFollowing = await this.db
           .select()
           .from(followRequestsTable)
-          .where(eq(followRequestsTable.followerId, userId))
-          .where(eq(followRequestsTable.followeeId, userDb[0].userId))
-          .where(eq(followRequestsTable.isAccepted, true));
+          .where(
+            and(
+              eq(followRequestsTable.followerId, userId),
+              eq(followRequestsTable.followeeId, userDb[0].userId),
+              eq(followRequestsTable.isAccepted, true),
+            ),
+          );
         if (isFollowing.length === 0) {
           user.userId = userDb[0].userId;
           user.email = userDb[0].email;
