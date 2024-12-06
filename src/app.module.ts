@@ -14,6 +14,7 @@ import { UserModule } from './modules/user/user.module';
 import { FollowModule } from './modules/follow/follow.module';
 import { FeedController } from './modules/feed/feed.controller';
 import { FeedModule } from './modules/feed/feed.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { FeedModule } from './modules/feed/feed.module';
     UserModule,
     FollowModule,
     FeedModule,
+    ChatModule,
   ],
   controllers: [AuthController, FeedController],
   providers: [AppService],

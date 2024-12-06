@@ -61,3 +61,17 @@ export const followRequestsTable = pgTable('follow_requests', {
   createdAt: timestamp().notNull(),
   updatedAt: timestamp(),
 });
+
+export const messagesTable = pgTable('messages', {
+  messageId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  senderId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  receiverId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  text: varchar().notNull(),
+  isRead: boolean().notNull().default(false),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp(),
+});

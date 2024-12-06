@@ -50,6 +50,7 @@ export class FollowService {
           email: usersTable.email,
           profilePicture: usersTable.profilePicture,
           createdAt: followRequestsTable.createdAt,
+          updatedAt: followRequestsTable.updatedAt,
           isAccepted: followRequestsTable.isAccepted,
         })
         .from(followRequestsTable)
@@ -76,6 +77,7 @@ export class FollowService {
           email: usersTable.email,
           profilePicture: usersTable.profilePicture,
           createdAt: followRequestsTable.createdAt,
+          updatedAt: followRequestsTable.updatedAt,
           isAccepted: followRequestsTable.isAccepted,
         })
         .from(followRequestsTable)
@@ -102,6 +104,7 @@ export class FollowService {
           email: usersTable.email,
           profilePicture: usersTable.profilePicture,
           createdAt: followRequestsTable.createdAt,
+          updatedAt: followRequestsTable.updatedAt,
           isAccepted: followRequestsTable.isAccepted,
         })
         .from(followRequestsTable)

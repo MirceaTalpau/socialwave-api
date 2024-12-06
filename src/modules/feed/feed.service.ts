@@ -8,7 +8,7 @@ import {
   usersTable,
   videosPostTable,
 } from 'src/db/schema';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { FeedResponseDto } from './dtos/FeedResponse.dto';
 
 @Injectable()
