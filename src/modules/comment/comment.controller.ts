@@ -23,13 +23,9 @@ export class CommentController {
   }
 
   @Delete()
-  async deleteComment(@Req() req, @Body() comment: UpdateCommentDto) {
+  async deleteComment(@Req() req, @Body() comment: { commentId: number }) {
     const user = req.user;
-    comment.userId = user;
-    return await this.commentService.deleteComment(
-      comment.commentId,
-      comment.userId,
-    );
+    return await this.commentService.deleteComment(comment.commentId, user);
   }
 
   //   @Get()

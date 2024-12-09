@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import {
-  commentsTable,
   followRequestsTable,
   imagesPostTable,
   postsTable,
@@ -60,7 +59,6 @@ export class FeedService {
         })
         .from(videosPostTable)
         .where(eq(videosPostTable.postId, post.postId));
-      console.log(comments);
       feed.push({
         userId: post.userId,
         postId: post.postId,

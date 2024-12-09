@@ -64,6 +64,17 @@ export const commentsTable = pgTable('comments', {
   updatedAt: timestamp(),
 });
 
+export const likesTable = pgTable('likes', {
+  likeId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  postId: integer()
+    .notNull()
+    .references(() => postsTable.postId),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  createdAt: timestamp().notNull(),
+});
+
 export const followRequestsTable = pgTable('follow_requests', {
   followerId: integer()
     .notNull()

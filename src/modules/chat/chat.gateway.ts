@@ -32,6 +32,13 @@ export class ChatGateway
   handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
   }
+  @SubscribeMessage('typing')
+  handleTyping(
+    @MessageBody() { chatId, userId }: { chatId: number; userId: number },
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.server.to(`chat_${chatId}`).emit('userTyping', { userId });
+  }
 
   @SubscribeMessage('sendMessage')
   async handleSendMessage(
