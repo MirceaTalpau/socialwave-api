@@ -5,11 +5,15 @@ import { followRequestsTable, usersTable } from 'src/db/schema';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { PostService } from '../post/post.service';
 import 'dotenv/config';
+import { FollowService } from '../follow/follow.service';
 
 @Injectable()
 export class UserService {
   private readonly db;
-  constructor(private readonly postService: PostService) {
+  constructor(
+    private readonly postService: PostService,
+    private readonly followService: FollowService,
+  ) {
     this.db = drizzle(process.env.DATABASE_URL!);
   }
   async findOne(currentUserId: number, userId?: number) {
@@ -22,8 +26,7 @@ export class UserService {
         .select()
         .from(usersTable)
         .where(eq(usersTable.userId, userId));
-      console.log(userDb);
-      console.log(currentUserId);
+
       if (userDb[0].userId != currentUserId) {
         const isFollowing = await this.db
           .select()
@@ -45,6 +48,10 @@ export class UserService {
           user.profilePicture = userDb[0].profilePicture;
           user.coverPicture = userDb[0].coverPicture;
           user.birthdate = userDb[0].birthdate;
+          const followers = await this.followService.getFollowers(userId);
+          user.followers = followers;
+          const following = await this.followService.getFollowing(userId);
+          user.following = following;
           return user;
         }
       }
@@ -57,6 +64,10 @@ export class UserService {
       user.profilePicture = userDb[0].profilePicture;
       user.coverPicture = userDb[0].coverPicture;
       user.birthdate = userDb[0].birthdate;
+      const followers = await this.followService.getFollowers(userId);
+      user.followers = followers;
+      const following = await this.followService.getFollowing(userId);
+      user.following = following;
       const posts = await this.postService.findAllByUser(userId);
       user.posts = posts;
       return user;

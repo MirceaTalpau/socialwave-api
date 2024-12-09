@@ -5,6 +5,7 @@ import { RequestFollowDto } from './dtos/request-follow.dto';
 import { followRequestsTable, usersTable } from 'src/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { FollowRequest } from 'src/entities/follow-request.entity';
+import { FollowResponseDto } from './dtos/follow-response.dto';
 @Injectable()
 export class FollowService {
   private readonly db;
@@ -43,7 +44,7 @@ export class FollowService {
 
   async getFollowers(userId: number) {
     try {
-      const followers = await this.db
+      const followers: FollowResponseDto[] = await this.db
         .select({
           userId: usersTable.userId,
           name: usersTable.name,
@@ -70,7 +71,7 @@ export class FollowService {
 
   async getFollowing(userId: number) {
     try {
-      const following = await this.db
+      const following: FollowResponseDto[] = await this.db
         .select({
           userId: usersTable.userId,
           name: usersTable.name,

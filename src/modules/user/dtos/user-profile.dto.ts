@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Post } from 'src/entities/post.entity';
+import { FollowResponseDto } from 'src/modules/follow/dtos/follow-response.dto';
 
 export class UserProfileDto {
   @ApiProperty()
@@ -22,4 +23,8 @@ export class UserProfileDto {
   birthdate: Date;
   @ApiProperty()
   posts: Post[];
+  @ApiProperty()
+  followers: FollowResponseDto[];
+  @ApiProperty()
+  following: FollowResponseDto[];
 }
