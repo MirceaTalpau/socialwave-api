@@ -54,11 +54,12 @@ export class ChatGateway
   }
 
   @SubscribeMessage('joinChat')
-  handleJoinChat(
-    @MessageBody() userId: number,
+  async handleJoinChat(
+    @MessageBody() { chatId, userId }: { chatId: number; userId: number },
     @ConnectedSocket() client: Socket,
   ) {
-    client.join(`user_${userId}`);
-    console.log(`User ${userId} joined room user_${userId}`);
+    // Join the user to the room
+    client.join(`chat_${existingChatId}`);
+    console.log(`User ${userId} joined room chat_${existingChatId}`);
   }
 }

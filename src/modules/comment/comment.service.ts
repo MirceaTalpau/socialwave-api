@@ -21,8 +21,14 @@ export class CommentService {
       newComment.userId = comment.userId;
       newComment.text = comment.text;
       newComment.createdAt = new Date();
-      await this.db.insert(commentsTable).values(newComment);
-      return { message: 'Comment created successfully' };
+      return await this.db.insert(commentsTable).values(newComment).returning({
+        commentId: commentsTable.commentId,
+        parentId: commentsTable.parentId,
+        postId: commentsTable.postId,
+        userId: commentsTable.userId,
+        text: commentsTable.text,
+        createdAt: commentsTable.createdAt,
+      });
     } catch (error) {
       throw error;
     }
