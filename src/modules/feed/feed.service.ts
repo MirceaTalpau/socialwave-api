@@ -11,11 +11,12 @@ import {
 } from 'src/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { FeedResponseDto } from './dtos/FeedResponse.dto';
+import { CommentService } from '../comment/comment.service';
 
 @Injectable()
 export class FeedService {
   private readonly db;
-  constructor() {
+  constructor(private readonly commentService: CommentService) {
     this.db = drizzle(process.env.DATABASE_URL);
   }
 
@@ -43,10 +44,9 @@ export class FeedService {
       .orderBy(postsTable.createdAt, 'desc');
     const feed: FeedResponseDto[] = [];
     for (const post of posts) {
-      const comments = await this.db
-        .select()
-        .from(commentsTable)
-        .where(eq(commentsTable.postId, post.postId));
+      const comments = await this.commentService.getCommentsByPostId(
+        post.postId,
+      );
 
       const images = await this.db
         .select({
@@ -60,6 +60,7 @@ export class FeedService {
         })
         .from(videosPostTable)
         .where(eq(videosPostTable.postId, post.postId));
+      console.log(comments);
       feed.push({
         userId: post.userId,
         postId: post.postId,
@@ -76,6 +77,9 @@ export class FeedService {
           userId: comment.userId,
           text: comment.text,
           createdAt: comment.createdAt,
+          updatedAt: comment.updatedAt,
+          name: comment.name,
+          profilePicture: comment.profilePicture,
         })),
       });
     }

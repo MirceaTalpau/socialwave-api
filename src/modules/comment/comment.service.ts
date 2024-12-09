@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { CreateCommentDto } from './dtos/CreateComment.dto';
-import { commentsTable } from 'src/db/schema';
+import { commentsTable, usersTable } from 'src/db/schema';
 import { Comment } from 'src/entities/comment.entity';
 import { and, eq } from 'drizzle-orm';
 import { UpdateCommentDto } from './dtos/UpdateComment.dto';
@@ -31,8 +31,19 @@ export class CommentService {
   async getCommentsByPostId(postId: number) {
     try {
       return await this.db
-        .select()
+        .select({
+          commentId: commentsTable.commentId,
+          parentId: commentsTable.parentId,
+          postId: commentsTable.postId,
+          userId: commentsTable.userId,
+          text: commentsTable.text,
+          createdAt: commentsTable.createdAt,
+          updatedAt: commentsTable.updatedAt,
+          name: usersTable.name,
+          profilePicture: usersTable.profilePicture,
+        })
         .from(commentsTable)
+        .innerJoin(usersTable, eq(commentsTable.userId, usersTable.userId))
         .where(eq(commentsTable.postId, postId));
     } catch (error) {
       throw error;
