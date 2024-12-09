@@ -16,6 +16,7 @@ import { FeedController } from './modules/feed/feed.controller';
 import { FeedModule } from './modules/feed/feed.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { LikeModule } from './modules/like/like.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { CommentModule } from './modules/comment/comment.module';
     FeedModule,
     ChatModule,
     CommentModule,
+    LikeModule,
   ],
   controllers: [AuthController, FeedController],
   providers: [AppService],

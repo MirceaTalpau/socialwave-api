@@ -12,9 +12,11 @@ export class ChatController {
     return await this.chatService.getChatsByUserId(user);
   }
   @Post()
-  async createChat(@Req() req, @Body() chat: CreateChatDto) {
-    const user = req.user;
-    chat.user2Id = user;
+  async createChat(@Req() req, @Body() user: { userId: number }) {
+    const currentUser = req.user;
+    const chat = new CreateChatDto();
+    chat.user1Id = currentUser;
+    chat.user2Id = user.userId;
     return await this.chatService.createChat(chat);
   }
 }

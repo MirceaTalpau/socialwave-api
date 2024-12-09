@@ -46,6 +46,7 @@ export class ChatGateway
     message: SendMessageDto,
     @ConnectedSocket() client: Socket,
   ) {
+    console.log('Message received:', message);
     const savedMessage = await this.chatService.saveMessage(message);
     this.server
       .to(`user_${message.receiverId}`)
@@ -59,7 +60,7 @@ export class ChatGateway
     @ConnectedSocket() client: Socket,
   ) {
     // Join the user to the room
-    client.join(`chat_${existingChatId}`);
-    console.log(`User ${userId} joined room chat_${existingChatId}`);
+    client.join(`chat_${chatId}`);
+    console.log(`User ${userId} joined room chat_${chatId}`);
   }
 }

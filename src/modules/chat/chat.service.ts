@@ -42,26 +42,56 @@ export class ChatService {
 
   async createChat(chat: CreateChatDto) {
     try {
-      await this.db.insert(chatTable).values(chat);
-      return { message: 'Chat created successfully' };
+      const chatExists = await this.db
+        .select()
+        .from(chatTable)
+        .where(
+          or(
+            and(
+              eq(chatTable.user1Id, chat.user1Id),
+              eq(chatTable.user2Id, chat.user2Id),
+            ),
+            and(
+              eq(chatTable.user1Id, chat.user2Id),
+              eq(chatTable.user2Id, chat.user1Id),
+            ),
+          ),
+        );
+      if (chatExists.length > 0) {
+        return chatExists[0];
+      }
+      return await this.db
+        .insert(chatTable)
+        .values(chat)
+        .returning({ chatId: chatTable.chatId });
     } catch (error) {
       throw error;
     }
   }
 
   async saveMessage(message: SendMessageDto) {
-    const savedMessage = await this.db.messagesTable.insert({
-      senderId: message.senderId,
-      receiverId: message.receiverId,
-      text: message.text,
-      createdAt: new Date(),
-      chatId: message.chatId,
-    });
+    const savedMessage = await this.db
+      .insert(messagesTable)
+      .values({
+        senderId: message.senderId,
+        receiverId: message.receiverId,
+        text: message.text,
+        createdAt: new Date(),
+        chatId: message.chatId,
+      })
+      .returning({
+        messageId: messagesTable.messageId,
+        senderId: messagesTable.senderId,
+        receiverId: messagesTable.receiverId,
+        text: messagesTable.text,
+        createdAt: messagesTable.createdAt,
+        chatId: messagesTable.chatId,
+      });
     return savedMessage;
   }
 
   async getMessages(senderId: number, receiverId: number) {
-    this.db.messagesTable
+    const messages = this.db.messagesTable
       .update({ isRead: true })
       .where(
         and(
@@ -69,16 +99,14 @@ export class ChatService {
           eq(messagesTable.receiverId, receiverId),
           eq(messagesTable.isRead, false),
         ),
-      );
-    const messages = await this.db
-      .select()
-      .from(messagesTable)
-      .where(
-        and(
-          eq(messagesTable.senderId, senderId),
-          eq(messagesTable.receiverId, receiverId),
-        ),
-      );
+      )
+      .returning({
+        messageId: messagesTable.messageId,
+        senderId: messagesTable.senderId,
+        receiverId: messagesTable.receiverId,
+        text: messagesTable.text,
+        createdAt: messagesTable.createdAt,
+      });
     return messages;
   }
 }
