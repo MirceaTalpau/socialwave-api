@@ -30,8 +30,8 @@ export class UserService {
           .from(followRequestsTable)
           .where(
             and(
-              eq(followRequestsTable.followerId, currentUserId),
-              eq(followRequestsTable.followeeId, userId),
+              eq(followRequestsTable.followerId, userId),
+              eq(followRequestsTable.followeeId, currentUserId),
               eq(followRequestsTable.isAccepted, true),
             ),
           );
