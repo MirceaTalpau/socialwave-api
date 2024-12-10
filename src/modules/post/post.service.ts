@@ -172,6 +172,7 @@ export class PostService {
       post.userId = rawPost[0].userId;
       post.description = rawPost[0].description;
       post.createdAt = rawPost[0].createdAt;
+      post.name = user[0].name;
       const images = await this.db
         .select()
         .from(imagesPostTable)
@@ -209,9 +210,11 @@ export class PostService {
         commentId: comment.commentId,
         userId: comment.userId,
         postId: comment.postId,
-        comment: comment.comment,
+        text: comment.text,
         createdAt: comment.createdAt,
         updatedAt: comment.updatedAt,
+        profilePicture: comment.profilePicture,
+        name: comment.name,
       }));
       return post;
     } catch (e) {
