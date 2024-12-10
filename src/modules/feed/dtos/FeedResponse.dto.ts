@@ -1,4 +1,5 @@
 import { CommentResponseDto } from 'src/modules/comment/dtos/CommentResponse.dto';
+import { LikeResponseDto } from 'src/modules/like/dtos/like-response.dto';
 
 export class FeedResponseDto {
   userId: number;
@@ -10,4 +11,5 @@ export class FeedResponseDto {
   images: string[];
   videos: string[];
   comments: CommentResponseDto[];
+  likes: LikeResponseDto[];
 }
