@@ -18,9 +18,11 @@ export class LikeService {
     if (like.length > 0) {
       return { message: 'You have already liked this post' };
     }
-    await this.db.insert(likesTable, {
+    const date = new Date();
+    await this.db.insert(likesTable).values({
       userId,
       postId,
+      createdAt: date,
     });
     return { message: 'Post liked' };
   }
