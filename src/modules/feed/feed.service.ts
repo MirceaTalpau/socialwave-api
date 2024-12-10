@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import { followRequestsTable, postsTable, usersTable } from 'src/db/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { FeedResponseDto } from './dtos/FeedResponse.dto';
 
 @Injectable()
@@ -31,9 +31,12 @@ export class FeedService {
       .innerJoin(usersTable, eq(postsTable.userId, usersTable.userId))
 
       .where(
-        and(
-          eq(followRequestsTable.followerId, userId),
-          eq(followRequestsTable.isAccepted, true),
+        or(
+          eq(postsTable.userId, userId), // Include user's own posts
+          and(
+            eq(followRequestsTable.followerId, userId), // Posts from followed users
+            eq(followRequestsTable.isAccepted, true), // Follow request must be accepted
+          ),
         ),
       )
       .orderBy(postsTable.createdAt, 'desc')
