@@ -29,8 +29,7 @@ export class LikeService {
 
   async unlikePost(userId: number, postId: number) {
     await this.db
-      .delete()
-      .from(likesTable)
+      .delete(likesTable)
       .where(and(eq(likesTable.userId, userId), eq(likesTable.postId, postId)));
     return { message: 'Post unliked' };
   }

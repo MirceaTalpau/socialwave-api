@@ -51,7 +51,7 @@ export class FeedService {
       const comments = await this.commentService.getCommentsByPostId(
         post.postId,
       );
-      const likes = await this.likeService.getLikes(post.postId);
+      const likes = await this.likeService.getLikesAndUsers(post.postId);
       const images = await this.db
         .select({
           images: imagesPostTable.imageUrl,
