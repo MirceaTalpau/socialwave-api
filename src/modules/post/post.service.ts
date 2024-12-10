@@ -157,14 +157,12 @@ export class PostService {
         throw new Error('Post not found');
       }
       post.postId = rawPost[0].postId;
-      console.log('rawPost', rawPost);
 
       const user = await this.db
         .select()
         .from(usersTable)
         .where(eq(usersTable.userId, rawPost[0].userId))
         .execute();
-      console.log('user', user);
       if (!user.length) {
         throw new Error('User not found');
       }
