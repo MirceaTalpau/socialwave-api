@@ -1,29 +1,19 @@
+import { PostService } from './../post/post.service';
 import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
-import {
-  followRequestsTable,
-  imagesPostTable,
-  postsTable,
-  usersTable,
-  videosPostTable,
-} from 'src/db/schema';
+import { followRequestsTable, postsTable, usersTable } from 'src/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { FeedResponseDto } from './dtos/FeedResponse.dto';
-import { CommentService } from '../comment/comment.service';
-import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class FeedService {
   private readonly db;
-  constructor(
-    private readonly commentService: CommentService,
-    private readonly likeService: LikeService,
-  ) {
+  constructor(private readonly PostService: PostService) {
     this.db = drizzle(process.env.DATABASE_URL);
   }
 
-  async getFeed(userId: number) {
+  async getFeed(userId: number, page: number) {
     const posts = await this.db
       .select({
         userId: usersTable.userId,
@@ -44,55 +34,14 @@ export class FeedService {
         and(eq(followRequestsTable.followerId, userId)),
         eq(followRequestsTable.isAccepted, true),
       )
-      .orderBy(postsTable.createdAt, 'desc');
+      .orderBy(postsTable.createdAt, 'desc')
+      .limit(10)
+      .offset(10 * page);
 
     const feed: FeedResponseDto[] = [];
     for (const post of posts) {
-      const comments = await this.commentService.getCommentsByPostId(
-        post.postId,
-      );
-      const likes = await this.likeService.getLikesAndUsers(post.postId);
-      const images = await this.db
-        .select({
-          images: imagesPostTable.imageUrl,
-        })
-        .from(imagesPostTable)
-        .where(eq(imagesPostTable.postId, post.postId));
-      const videos = await this.db
-        .select({
-          videos: videosPostTable.videoUrl,
-        })
-        .from(videosPostTable)
-        .where(eq(videosPostTable.postId, post.postId));
-      feed.push({
-        userId: post.userId,
-        postId: post.postId,
-        name: post.name,
-        profilePicture: post.profilePicture,
-        createdAt: post.createdAt,
-        description: post.description,
-        images: images.map((image) => image.images),
-        videos: videos.map((video) => video.videos),
-        likes: likes.map((like) => ({
-          userId: like.userId,
-          postId: like.postId,
-          likeId: like.likeId,
-          name: like.name,
-          profilePicture: like.profilePicture,
-          createdAt: like.createdAt,
-        })),
-        comments: comments.map((comment) => ({
-          commentId: comment.commentId,
-          parentId: comment.parentId,
-          postId: comment.postId,
-          userId: comment.userId,
-          text: comment.text,
-          createdAt: comment.createdAt,
-          updatedAt: comment.updatedAt,
-          name: comment.name,
-          profilePicture: comment.profilePicture,
-        })),
-      });
+      const postFeed = await this.PostService.findOne(post.postId);
+      feed.push(postFeed);
     }
 
     return feed;
