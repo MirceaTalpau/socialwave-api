@@ -15,11 +15,18 @@ import { Post } from 'src/entities/post.entity';
 import { ImagePost } from 'src/entities/image-post.entity';
 import { VideoPost } from 'src/entities/video-post.entity';
 import * as path from 'path';
+import { FeedResponseDto } from '../feed/dtos/FeedResponse.dto';
+import { CommentService } from '../comment/comment.service';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class PostService {
   private readonly db;
-  constructor(private readonly fileUploadService: FileUploadService) {
+  constructor(
+    private readonly fileUploadService: FileUploadService,
+    private readonly commentService: CommentService,
+    private readonly likeService: LikeService,
+  ) {
     this.db = drizzle(process.env.DATABASE_URL);
   }
   async createPost(createPostDto: CreatePostDto) {
@@ -140,7 +147,7 @@ export class PostService {
   }
   async findOne(postId: number) {
     try {
-      const post = new Post();
+      const post = new FeedResponseDto();
       const rawPost = await this.db
         .select()
         .from(postsTable)
@@ -165,7 +172,6 @@ export class PostService {
       post.userId = rawPost[0].userId;
       post.description = rawPost[0].description;
       post.createdAt = rawPost[0].createdAt;
-      post.updatedAt = rawPost[0].updatedAt;
       const images = await this.db
         .select()
         .from(imagesPostTable)
@@ -190,6 +196,23 @@ export class PostService {
         newVideo.videoUrl = video.videoUrl;
         return newVideo;
       });
+      const comments = await this.commentService.getCommentsByPostId(postId);
+      const likes = await this.likeService.getLikesAndUsers(postId);
+      post.likes = likes.map((like) => ({
+        userId: like.userId,
+        postId: like.postId,
+        name: like.name,
+        profilePicture: like.profilePicture,
+        createdAt: like.createdAt,
+      }));
+      post.comments = comments.map((comment) => ({
+        commentId: comment.commentId,
+        userId: comment.userId,
+        postId: comment.postId,
+        comment: comment.comment,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+      }));
       return post;
     } catch (e) {
       throw e;
@@ -197,7 +220,7 @@ export class PostService {
   }
   async findAllByUser(userId: number) {
     try {
-      const posts = new Array<Post>();
+      const posts = new Array<FeedResponseDto>();
       const rawPosts = await this.db
         .select()
         .from(postsTable)
@@ -244,7 +267,36 @@ export class PostService {
             newVideo.videoUrl = video.videoUrl;
             return newVideo;
           });
-          posts.push(post);
+
+          const comments = await this.commentService.getCommentsByPostId(
+            rawPost.postId,
+          );
+          const likes = await this.likeService.getLikesAndUsers(rawPost.postId);
+          posts.push({
+            userId: user[0].userId,
+            postId: post.postId,
+            name: user[0].name,
+            profilePicture: user[0].profilePicture,
+            createdAt: post.createdAt,
+            description: post.description,
+            images: post.images.map((image) => image.imageUrl),
+            videos: post.videos.map((video) => video.videoUrl),
+            likes: likes.map((like) => ({
+              userId: like.userId,
+              postId: like.postId,
+              name: like.name,
+              profilePicture: like.profilePicture,
+              createdAt: like.createdAt,
+            })),
+            comments: comments.map((comment) => ({
+              commentId: comment.commentId,
+              userId: comment.userId,
+              postId: comment.postId,
+              comment: comment.comment,
+              createdAt: comment.createdAt,
+              updatedAt: comment.updatedAt,
+            })),
+          });
         }),
       );
       posts.sort((a, b) => {
