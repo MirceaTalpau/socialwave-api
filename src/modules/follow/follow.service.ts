@@ -27,9 +27,8 @@ export class FollowService {
           eq(followRequestsTable.followeeId, followRequest.followeeId),
           eq(followRequestsTable.isAccepted, true),
         ),
-      )
-      .toSQL();
-    console.log(follow);
+      );
+
     if (follow.length > 0) {
       return { message: 'Following' };
     }
