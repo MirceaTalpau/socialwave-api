@@ -7,7 +7,7 @@ export class FeedController {
   constructor(private readonly feedService: FeedService) {}
 
   @ApiBearerAuth()
-  @Get()
+  @Get(':page')
   async getFeed(@Req() req, @Param() payload: { page?: number } = { page: 1 }) {
     const user = req.user;
     const feed = await this.feedService.getFeed(user, payload.page);
