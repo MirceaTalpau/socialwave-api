@@ -31,8 +31,10 @@ export class FeedService {
       .innerJoin(usersTable, eq(postsTable.userId, usersTable.userId))
 
       .where(
-        and(eq(followRequestsTable.followerId, userId)),
-        eq(followRequestsTable.isAccepted, true),
+        and(
+          eq(followRequestsTable.followerId, userId),
+          eq(followRequestsTable.isAccepted, true),
+        ),
       )
       .orderBy(postsTable.createdAt, 'desc')
       .limit(10)

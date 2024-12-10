@@ -22,10 +22,14 @@ export class FollowService {
       .select()
       .from(followRequestsTable)
       .where(
-        and(eq(followRequestsTable.followerId, followRequest.followerId)),
-        eq(followRequestsTable.followeeId, followRequest.followeeId),
-        eq(followRequestsTable.isAccepted, true),
-      );
+        and(
+          eq(followRequestsTable.followerId, followRequest.followerId),
+          eq(followRequestsTable.followeeId, followRequest.followeeId),
+          eq(followRequestsTable.isAccepted, true),
+        ),
+      )
+      .toSQL();
+    console.log(follow);
     if (follow.length > 0) {
       return { message: 'Following' };
     }
@@ -33,8 +37,10 @@ export class FollowService {
       .select()
       .from(followRequestsTable)
       .where(
-        and(eq(followRequestsTable.followerId, followRequest.followerId)),
-        eq(followRequestsTable.followeeId, followRequest.followeeId),
+        and(
+          eq(followRequestsTable.followerId, followRequest.followerId),
+          eq(followRequestsTable.followeeId, followRequest.followeeId),
+        ),
       );
     if (followRequestExists.length > 0) {
       return { message: 'Follow request sent' };
@@ -60,8 +66,10 @@ export class FollowService {
           eq(followRequestsTable.followerId, usersTable.userId),
         )
         .where(
-          and(eq(followRequestsTable.followeeId, userId)),
-          eq(followRequestsTable.isAccepted, true),
+          and(
+            eq(followRequestsTable.followeeId, userId),
+            eq(followRequestsTable.isAccepted, true),
+          ),
         );
       return followers;
     } catch (error) {
@@ -87,8 +95,10 @@ export class FollowService {
           eq(followRequestsTable.followeeId, usersTable.userId),
         )
         .where(
-          and(eq(followRequestsTable.followerId, userId)),
-          eq(followRequestsTable.isAccepted, true),
+          and(
+            eq(followRequestsTable.followerId, userId),
+            eq(followRequestsTable.isAccepted, true),
+          ),
         );
       return following;
     } catch (error) {
@@ -138,8 +148,10 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, follow.followerId)),
-          eq(followRequestsTable.followeeId, follow.followeeId),
+          and(
+            eq(followRequestsTable.followerId, follow.followerId),
+            eq(followRequestsTable.followeeId, follow.followeeId),
+          ),
         );
       if (followRequestExists.length > 0) {
         return { message: 'Follow request already sent' };
@@ -160,9 +172,11 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
-          eq(followRequestsTable.isAccepted, false),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+            eq(followRequestsTable.isAccepted, false),
+          ),
         );
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
@@ -174,9 +188,11 @@ export class FollowService {
         .update(followRequestsTable)
         .set({ isAccepted: true, updatedAt: new Date() })
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
-          eq(followRequestsTable.isAccepted, false),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+            eq(followRequestsTable.isAccepted, false),
+          ),
         )
         .execute();
       return { message: 'Follow request accepted' };
@@ -194,8 +210,10 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+          ),
         );
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
@@ -221,9 +239,11 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
-          eq(followRequestsTable.isAccepted, true),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+            eq(followRequestsTable.isAccepted, true),
+          ),
         );
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
@@ -231,9 +251,11 @@ export class FollowService {
       await this.db
         .delete(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
-          eq(followRequestsTable.isAccepted, true),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+            eq(followRequestsTable.isAccepted, true),
+          ),
         )
         .execute();
       return { message: 'Unfollowed' };
@@ -248,9 +270,11 @@ export class FollowService {
         .select()
         .from(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
-          eq(followRequestsTable.isAccepted, false),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+            eq(followRequestsTable.isAccepted, false),
+          ),
         );
       if (followRequestExists.length == 0) {
         return { message: 'Follow request not found' };
@@ -258,9 +282,11 @@ export class FollowService {
       await this.db
         .delete(followRequestsTable)
         .where(
-          and(eq(followRequestsTable.followerId, followRequest.followerId)),
-          eq(followRequestsTable.followeeId, followRequest.followeeId),
-          eq(followRequestsTable.isAccepted, false),
+          and(
+            eq(followRequestsTable.followerId, followRequest.followerId),
+            eq(followRequestsTable.followeeId, followRequest.followeeId),
+            eq(followRequestsTable.isAccepted, false),
+          ),
         );
       return { message: 'Follow request deleted' };
     } catch (error) {
