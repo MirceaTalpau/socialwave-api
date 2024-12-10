@@ -350,6 +350,8 @@ export class PostService {
           await this.fileUploadService.deleteFile(videoKey);
         }),
       );
+      await this.commentService.deleteAllByPostId(postId);
+      await this.likeService.deleteAllByPostId(postId);
       await this.db
         .delete(postsTable)
         .where(eq(postsTable.postId, postId))

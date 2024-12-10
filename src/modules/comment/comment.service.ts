@@ -73,6 +73,18 @@ export class CommentService {
       throw error;
     }
   }
+
+  async deleteAllByPostId(postId: number) {
+    try {
+      await this.db
+        .delete(commentsTable)
+        .where(eq(commentsTable.postId, postId));
+      return { message: 'Comments deleted successfully' };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async deleteComment(commentId: number, userId: number) {
     try {
       await this.db

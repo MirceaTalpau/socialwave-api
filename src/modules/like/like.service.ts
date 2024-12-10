@@ -55,4 +55,8 @@ export class LikeService {
       .where(eq(likesTable.postId, postId));
     return likes;
   }
+
+  async deleteAllByPostId(postId: number) {
+    await this.db.delete(likesTable).where(eq(likesTable.postId, postId));
+  }
 }
