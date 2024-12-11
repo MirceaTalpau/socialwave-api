@@ -46,6 +46,7 @@ export class ChatService {
           .select({
             userId: usersTable.userId,
             profilePicture: usersTable.profilePicture,
+            name: usersTable.name,
           })
           .from(usersTable)
           .where(eq(usersTable.userId, otherUserId))
