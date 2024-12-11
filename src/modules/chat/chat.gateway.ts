@@ -49,7 +49,7 @@ export class ChatGateway
     console.log('Message received:', message);
     const savedMessage = await this.chatService.saveMessage(message);
     this.server
-      .to(`user_${message.receiverId}`)
+      .to(`chat_${message.chatId}`)
       .emit('receiveMessage', savedMessage);
     return savedMessage;
   }
