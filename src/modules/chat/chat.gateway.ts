@@ -34,10 +34,36 @@ export class ChatGateway
   }
   @SubscribeMessage('typing')
   handleTyping(
-    @MessageBody() { chatId, userId }: { chatId: number; userId: number },
+    @MessageBody()
+    {
+      chatId,
+      senderId,
+      receiverId,
+    }: { chatId: number; senderId: number; receiverId: number },
     @ConnectedSocket() client: Socket,
   ) {
-    this.server.to(`chat_${chatId}`).emit('userTyping', { userId });
+    this.server.to(`chat_${chatId}`).emit('receiveTyping', {
+      chatId,
+      senderId,
+      receiverId,
+    });
+  }
+
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(
+    @MessageBody()
+    {
+      chatId,
+      senderId,
+      receiverId,
+    }: { chatId: number; senderId: number; receiverId: number },
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.server.to(`chat_${chatId}`).emit('receiveStopTyping', {
+      chatId,
+      senderId,
+      receiverId,
+    });
   }
 
   @SubscribeMessage('sendMessage')
