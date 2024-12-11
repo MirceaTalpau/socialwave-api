@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import { SendMessageDto } from './dtos/SendMessage.dto';
-import { chatTable, messagesTable } from 'src/db/schema';
+import { chatTable, messagesTable, usersTable } from 'src/db/schema';
 import { and, desc, eq, or } from 'drizzle-orm';
 import { CreateChatDto } from './dtos/CreateChat.dto';
 @Injectable()
@@ -11,7 +11,6 @@ export class ChatService {
   constructor() {
     this.db = drizzle(process.env.DATABASE_URL);
   }
-
   async getChatsByUserId(userId: number) {
     const chats = await this.db
       .select({
@@ -24,6 +23,11 @@ export class ChatService {
 
     const chatsWithLastMessage = await Promise.all(
       chats.map(async (chat) => {
+        // Determine the other user in the chat
+        const otherUserId =
+          chat.user1Id === userId ? chat.user2Id : chat.user1Id;
+
+        // Fetch the last message for the chat
         const lastMessage = await this.db
           .select({
             messageId: messagesTable.messageId,
@@ -35,6 +39,16 @@ export class ChatService {
           .from(messagesTable)
           .where(eq(messagesTable.chatId, chat.chatId))
           .orderBy(desc(messagesTable.createdAt))
+          .limit(1);
+
+        // Fetch the profile picture of the other user
+        const otherUser = await this.db
+          .select({
+            userId: usersTable.userId,
+            profilePicture: usersTable.profilePicture,
+          })
+          .from(usersTable)
+          .where(eq(usersTable.userId, otherUserId))
           .limit(1);
 
         // Check if a last message exists
@@ -51,6 +65,7 @@ export class ChatService {
                   lastMessageData.senderId === userId ? 'You' : 'Other',
               }
             : null,
+          otherUser: otherUser[0] || null, // Include the other user's profile picture and ID
         };
       }),
     );
