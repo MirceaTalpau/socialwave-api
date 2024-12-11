@@ -61,6 +61,8 @@ export class ChatGateway
   ) {
     // Join the user to the room
     client.join(`chat_${chatId}`);
+    const messages = await this.chatService.getMessages(userId, chatId);
+    client.emit('receiveMessages', messages);
     console.log(`User ${userId} joined room chat_${chatId}`);
   }
 }
