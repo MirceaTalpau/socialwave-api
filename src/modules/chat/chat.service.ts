@@ -125,23 +125,22 @@ export class ChatService {
     return savedMessage;
   }
 
-  async getMessages(senderId: number, receiverId: number) {
-    const messages = this.db.messagesTable
-      .update({ isRead: true })
+  async getMessages(userId: number, chatId: number) {
+    await this.db
+      .update(messagesTable)
+      .set({ isRead: true })
       .where(
         and(
-          eq(messagesTable.senderId, senderId),
-          eq(messagesTable.receiverId, receiverId),
+          eq(messagesTable.receiverId, userId),
+          eq(messagesTable.chatId, chatId),
           eq(messagesTable.isRead, false),
         ),
-      )
-      .returning({
-        messageId: messagesTable.messageId,
-        senderId: messagesTable.senderId,
-        receiverId: messagesTable.receiverId,
-        text: messagesTable.text,
-        createdAt: messagesTable.createdAt,
-      });
+      );
+    const messages = await this.db
+      .select()
+      .from(messagesTable)
+      .where(eq(messagesTable.chatId, chatId))
+      .orderBy(desc(messagesTable.createdAt));
     return messages;
   }
 }
