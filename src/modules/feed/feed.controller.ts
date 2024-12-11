@@ -1,5 +1,5 @@
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Controller, Get, Param, Query, Req } from '@nestjs/common';
+import { Controller, Get, Query, Req } from '@nestjs/common';
 import { FeedService } from './feed.service';
 
 @Controller('feed')
