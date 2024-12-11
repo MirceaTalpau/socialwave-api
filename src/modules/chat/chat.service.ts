@@ -56,7 +56,7 @@ export class ChatService {
         const lastMessageData = lastMessage[0] || null;
 
         return {
-          ...chat,
+          chatId: chat.chatId,
           lastMessage: lastMessageData
             ? {
                 text: lastMessageData.text,
