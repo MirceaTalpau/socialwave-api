@@ -157,7 +157,7 @@ export class ChatService {
     const messages = allMessages.slice(20 * page, 20 * page + 20);
     messages.reverse();
     // Calculate if there are more messages
-    const hasMore = totalMessages > (page + 1) * 10;
+    const hasMore = totalMessages > page * 20 + messages.length;
 
     return {
       messages,

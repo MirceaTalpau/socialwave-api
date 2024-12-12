@@ -24,12 +24,18 @@ export class StoryController {
   @Post()
   @ApiBearerAuth()
   @UseInterceptors(AnyFilesInterceptor())
-  async createStory(@Req() req, @UploadedFiles() files: Express.Multer.File) {
+  async createStory(@Req() req, @UploadedFiles() files: Express.Multer.File[]) {
     const userId = req.user;
-    if (files.mimetype.startsWith('image/')) {
-      return this.storyService.createStory(userId, files);
-    } else if (files.mimetype.startsWith('video/')) {
-      return this.storyService.createStory(userId, null, files);
+    if (files) {
+      // Loop through each file and categorize based on mimetype
+      files.forEach(async (file) => {
+        if (file.mimetype.startsWith('image/')) {
+          await this.storyService.createStory(userId, file); // Create a story with the image file
+        } else if (file.mimetype.startsWith('video/')) {
+          await this.storyService.createStory(userId, null, file); // Create a story with the video file
+        }
+      });
     }
+    return { message: 'Story created successfully' };
   }
 }

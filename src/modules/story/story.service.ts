@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as cron from 'node-cron';
 import 'dotenv/config';
-import { followRequestsTable, storyTable } from 'src/db/schema';
+import { followRequestsTable, storyTable, usersTable } from 'src/db/schema';
 import { eq, lt } from 'drizzle-orm';
 import { FileUploadService } from '../fileupload/fileupload.service';
 import { CreateStoryDto } from './dtos/CreateStory.dto';
@@ -31,12 +31,20 @@ export class StoryService {
 
   async getStoriesByUserId(userId: number) {
     return this.db
-      .select()
+      .select({
+        storyId: storyTable.storyId,
+        imageUrl: storyTable.imageUrl,
+        videoUrl: storyTable.videoUrl,
+        createdAt: storyTable.createdAt,
+        name: usersTable.name,
+        profilePicture: usersTable.profilePicture,
+      })
       .from(storyTable)
       .innerJoin(
         followRequestsTable,
         eq(storyTable.userId, followRequestsTable.followeeId),
       )
+      .innerJoin(usersTable, eq(storyTable.userId, usersTable.userId))
       .where(eq(storyTable.userId, userId));
   }
 
@@ -72,6 +80,7 @@ export class StoryService {
         return { message: 'Story created successfully' };
       }
       if (!videoUrl) {
+        console.log('Video URL:', imageUrl);
         story.imageUrl = imageUrl;
         story.userId = userId;
         story.createdAt = new Date();
