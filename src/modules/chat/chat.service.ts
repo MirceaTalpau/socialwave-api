@@ -155,7 +155,7 @@ export class ChatService {
 
     // Apply offset and limit in JavaScript
     const messages = allMessages.slice(20 * page, 20 * page + 20);
-
+    messages.reverse();
     // Calculate if there are more messages
     const hasMore = totalMessages > (page + 1) * 10;
 

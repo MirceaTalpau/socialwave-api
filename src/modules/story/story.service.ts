@@ -69,12 +69,14 @@ export class StoryService {
         story.userId = userId;
         story.createdAt = new Date();
         await this.db.insert(storyTable).values(story);
+        return { message: 'Story created successfully' };
       }
       if (!videoUrl) {
         story.imageUrl = imageUrl;
         story.userId = userId;
         story.createdAt = new Date();
         await this.db.insert(storyTable).values(story);
+        return { message: 'Story created successfully' };
       }
     } catch (e) {
       throw new Error(e);
