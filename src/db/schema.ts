@@ -115,3 +115,14 @@ export const chatTable = pgTable('chat', {
   createdAt: timestamp().notNull(),
   updatedAt: timestamp(),
 });
+
+export const storyTable = pgTable('story', {
+  storyId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  imageUrl: varchar().notNull(),
+  videoUrl: varchar().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp(),
+});

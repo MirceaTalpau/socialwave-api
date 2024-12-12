@@ -148,8 +148,8 @@ export class ChatService {
       .select()
       .from(messagesTable)
       .where(eq(messagesTable.chatId, chatId))
-      .limit(10)
-      .offset(10 * page)
+      .limit(20)
+      .offset(20 * page)
       .orderBy(desc(messagesTable.createdAt));
 
     // Calculate if there are more messages
