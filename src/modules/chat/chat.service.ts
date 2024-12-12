@@ -151,9 +151,8 @@ export class ChatService {
       .select()
       .from(messagesTable)
       .where(eq(messagesTable.chatId, chatId))
-      .orderBy(desc(messagesTable.createdAt))
-      .limit(20)
-      .offset(20 * page);
+      .orderBy(desc(messagesTable.createdAt));
+
     // Apply offset and limit in JavaScript
     const messages = allMessages.slice(20 * page, 20 * page + 20);
 

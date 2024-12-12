@@ -87,7 +87,7 @@ export class ChatGateway
   ) {
     // Join the user to the room
     client.join(`chat_${chatId}`);
-    const page = 1;
+    const page = 0;
     const messages = await this.chatService.getMessages(userId, chatId, page);
     console.log(messages);
     client.emit('receiveMessages', messages);
