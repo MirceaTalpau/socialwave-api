@@ -105,6 +105,7 @@ export class ChatService {
   }
 
   async saveMessage(message: SendMessageDto) {
+    message.createdAt = new Date();
     const savedMessage = await this.db
       .insert(messagesTable)
       .values({
@@ -112,6 +113,7 @@ export class ChatService {
         receiverId: message.receiverId,
         text: message.text,
         chatId: message.chatId,
+        createdAt: message.createdAt,
       })
       .returning({
         messageId: messagesTable.messageId,
@@ -121,6 +123,7 @@ export class ChatService {
         createdAt: messagesTable.createdAt,
         chatId: messagesTable.chatId,
       });
+    console.log('Saved message:', savedMessage);
     return savedMessage;
   }
 
