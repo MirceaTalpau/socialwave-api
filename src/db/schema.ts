@@ -5,6 +5,7 @@ import {
   pgTable,
   varchar,
   timestamp,
+  index,
 } from 'drizzle-orm/pg-core';
 
 export const usersTable = pgTable('users', {
@@ -116,13 +117,21 @@ export const chatTable = pgTable('chat', {
   updatedAt: timestamp(),
 });
 
-export const storyTable = pgTable('story', {
-  storyId: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
-    .notNull()
-    .references(() => usersTable.userId),
-  imageUrl: varchar().notNull(),
-  videoUrl: varchar().notNull(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp(),
-});
+export const storyTable = pgTable(
+  'story',
+  {
+    storyId: integer().primaryKey().generatedAlwaysAsIdentity(),
+    userId: integer()
+      .notNull()
+      .references(() => usersTable.userId),
+    imageUrl: varchar(),
+    videoUrl: varchar(),
+    createdAt: timestamp().notNull(),
+    updatedAt: timestamp(),
+  },
+  (table) => {
+    return {
+      createdAtIdx: index('story_created_at_idx').on(table.createdAt),
+    };
+  },
+);

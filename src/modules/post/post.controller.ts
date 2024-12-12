@@ -32,7 +32,6 @@ export class PostController {
   async findAllByUser(@Req() req) {
     try {
       const userId = req.user;
-
       return await this.postService.findAllByUser(userId);
     } catch (e) {
       throw e;

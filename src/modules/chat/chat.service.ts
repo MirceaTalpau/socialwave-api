@@ -151,9 +151,9 @@ export class ChatService {
       .select()
       .from(messagesTable)
       .where(eq(messagesTable.chatId, chatId))
+      .orderBy(desc(messagesTable.createdAt))
       .limit(20)
-      .offset(20 * page)
-      .orderBy(desc(messagesTable.createdAt));
+      .offset(20 * page);
 
     // Calculate if there are more messages
     const hasMore = totalMessages > (page + 1) * 10;

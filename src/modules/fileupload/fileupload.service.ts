@@ -26,12 +26,16 @@ export class FileUploadService {
     });
   }
 
-  async uploadSingleFile({
-    file,
-  }: {
-    file: Express.Multer.File;
-    isPublic: boolean;
-  }) {
+  async uploadSingleFile(
+    image: Express.Multer.File,
+    p0: boolean,
+    {
+      file,
+    }: {
+      file: Express.Multer.File;
+      isPublic: boolean;
+    },
+  ) {
     try {
       const key = `${Date.now().toString()}-${file.originalname}`;
       const command = new PutObjectCommand({
