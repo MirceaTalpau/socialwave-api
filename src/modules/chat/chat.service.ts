@@ -147,13 +147,15 @@ export class ChatService {
       .where(eq(messagesTable.chatId, chatId));
 
     // Fetch messages with pagination
-    const messages = await this.db
+    const allMessages = await this.db
       .select()
       .from(messagesTable)
       .where(eq(messagesTable.chatId, chatId))
       .orderBy(desc(messagesTable.createdAt))
       .limit(20)
       .offset(20 * page);
+    // Apply offset and limit in JavaScript
+    const messages = allMessages.slice(20 * page, 20 * page + 20);
 
     // Calculate if there are more messages
     const hasMore = totalMessages > (page + 1) * 10;
