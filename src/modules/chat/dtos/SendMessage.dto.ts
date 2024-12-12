@@ -3,4 +3,5 @@ export class SendMessageDto {
   receiverId: number;
   chatId: number;
   text: string;
+  createdAt: Date;
 }

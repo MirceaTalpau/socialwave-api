@@ -44,7 +44,6 @@ export class FeedService {
     //     })
     //     .execute();
     // }
-    console.log(page);
     const posts = await this.db
       .select({
         postId: postsTable.postId,

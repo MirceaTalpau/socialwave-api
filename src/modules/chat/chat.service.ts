@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import { SendMessageDto } from './dtos/SendMessage.dto';
 import { chatTable, messagesTable, usersTable } from 'src/db/schema';
-import { and, desc, eq, or } from 'drizzle-orm';
+import { and, count, desc, eq, or } from 'drizzle-orm';
 import { CreateChatDto } from './dtos/CreateChat.dto';
 @Injectable()
 export class ChatService {
@@ -111,7 +111,6 @@ export class ChatService {
         senderId: message.senderId,
         receiverId: message.receiverId,
         text: message.text,
-        createdAt: new Date(),
         chatId: message.chatId,
       })
       .returning({
@@ -125,7 +124,8 @@ export class ChatService {
     return savedMessage;
   }
 
-  async getMessages(userId: number, chatId: number) {
+  async getMessages(userId: number, chatId: number, page: number) {
+    // Mark messages as read for the specific user and chat
     await this.db
       .update(messagesTable)
       .set({ isRead: true })
@@ -136,11 +136,29 @@ export class ChatService {
           eq(messagesTable.isRead, false),
         ),
       );
+
+    // Get total count of messages for this chat
+    const [{ count: totalMessages }] = await this.db
+      .select({ count: count() })
+      .from(messagesTable)
+      .where(eq(messagesTable.chatId, chatId));
+
+    // Fetch messages with pagination
     const messages = await this.db
       .select()
       .from(messagesTable)
       .where(eq(messagesTable.chatId, chatId))
+      .limit(10)
+      .offset(10 * page)
       .orderBy(desc(messagesTable.createdAt));
-    return messages;
+
+    // Calculate if there are more messages
+    const hasMore = totalMessages > (page + 1) * 10;
+
+    return {
+      messages,
+      hasMore,
+      totalMessages,
+    };
   }
 }

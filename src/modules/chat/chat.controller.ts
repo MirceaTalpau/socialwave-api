@@ -21,8 +21,11 @@ export class ChatController {
   }
 
   @Get('messages')
-  async getChatMessages(@Req() req, @Query() chat: { chatId: number }) {
+  async getChatMessages(
+    @Req() req,
+    @Query() chat: { chatId: number; page?: number },
+  ) {
     const user = req.user;
-    return await this.chatService.getMessages(user, chat.chatId);
+    return await this.chatService.getMessages(user, chat.chatId, chat.page);
   }
 }
