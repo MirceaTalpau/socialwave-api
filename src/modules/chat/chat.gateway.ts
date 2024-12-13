@@ -74,6 +74,8 @@ export class ChatGateway
   ) {
     console.log('Message received:', message);
     const savedMessage = await this.chatService.saveMessage(message);
+    console.log('Message received:', savedMessage);
+
     this.server
       .to(`chat_${message.chatId}`)
       .emit('receiveMessage', savedMessage);
