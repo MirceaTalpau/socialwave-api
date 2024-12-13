@@ -103,7 +103,6 @@ export class StoryService {
         );
       if (story[0].imageUrl) {
         const imageKey = story[0].imageUrl.split('/').pop();
-        console.log('Image key:', imageKey);
         await this.fileUploadService.deleteFile(imageKey);
       }
       if (story[0].videoUrl) {
