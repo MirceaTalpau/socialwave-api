@@ -95,6 +95,21 @@ export class StoryService {
 
   async deleteStory(storyId: number, userId: number) {
     try {
+      const story = await this.db
+        .select()
+        .from(storyTable)
+        .where(
+          and(eq(storyTable.storyId, storyId), eq(storyTable.userId, userId)),
+        );
+      if (story[0].imageUrl) {
+        const imageKey = story[0].imageUrl.split('/').pop();
+        console.log('Image key:', imageKey);
+        await this.fileUploadService.deleteFile(imageKey);
+      }
+      if (story[0].videoUrl) {
+        const videoKey = story[0].videoUrl.split('/').pop();
+        await this.fileUploadService.deleteFile(videoKey);
+      }
       return await this.db
         .delete(storyTable)
         .where(
