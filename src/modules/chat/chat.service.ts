@@ -127,7 +127,7 @@ export class ChatService {
     return savedMessage;
   }
 
-  async getMessages(userId: number, chatId: number, page: number) {
+  async getMessages(userId: number, chatId: number, page: number = 0) {
     // Mark messages as read for the specific user and chat
     await this.db
       .update(messagesTable)
@@ -156,6 +156,7 @@ export class ChatService {
     // Apply offset and limit in JavaScript
     const messages = allMessages.slice(20 * page, 20 * page + 20);
     messages.reverse();
+    console.log('Messages:', messages);
     // Calculate if there are more messages
     const hasMore = totalMessages > page * 20 + messages.length;
 

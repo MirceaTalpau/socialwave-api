@@ -2,7 +2,9 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { StoryService } from './story.service';
 import {
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Req,
   UploadedFiles,
@@ -37,5 +39,12 @@ export class StoryController {
       });
     }
     return { message: 'Story created successfully' };
+  }
+
+  @Delete(':storyId')
+  @ApiBearerAuth()
+  async deleteStory(@Req() req, @Param('storyId') storyId: number) {
+    const userId = req.user;
+    return this.storyService.deleteStory(storyId, userId);
   }
 }

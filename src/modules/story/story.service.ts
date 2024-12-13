@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import * as cron from 'node-cron';
 import 'dotenv/config';
 import { followRequestsTable, storyTable, usersTable } from 'src/db/schema';
-import { eq, lt } from 'drizzle-orm';
+import { and, eq, lt } from 'drizzle-orm';
 import { FileUploadService } from '../fileupload/fileupload.service';
 import { CreateStoryDto } from './dtos/CreateStory.dto';
 @Injectable()
@@ -36,6 +36,7 @@ export class StoryService {
         imageUrl: storyTable.imageUrl,
         videoUrl: storyTable.videoUrl,
         createdAt: storyTable.createdAt,
+        userId: storyTable.userId,
         name: usersTable.name,
         profilePicture: usersTable.profilePicture,
       })
@@ -89,6 +90,18 @@ export class StoryService {
       }
     } catch (e) {
       throw new Error(e);
+    }
+  }
+
+  async deleteStory(storyId: number, userId: number) {
+    try {
+      return await this.db
+        .delete(storyTable)
+        .where(
+          and(eq(storyTable.storyId, storyId), eq(storyTable.userId, userId)),
+        );
+    } catch (e) {
+      throw e;
     }
   }
 }
