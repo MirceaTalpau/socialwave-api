@@ -18,7 +18,8 @@ export class NotificationService {
 
   async getNotifications(userId: number) {
     return this.db
-      .select(notificationsTable)
+      .select()
+      .from(notificationsTable)
       .where(eq(notificationsTable.userId, userId));
   }
 
