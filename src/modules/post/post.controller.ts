@@ -47,7 +47,6 @@ export class PostController {
     @UploadedFiles() files: Express.Multer.File[], // This is to capture the uploaded files
   ) {
     try {
-      console.log(createPostDto);
       // Initialize empty arrays for images and videos
       const images: Express.Multer.File[] = [];
       const videos: Express.Multer.File[] = [];
@@ -65,11 +64,9 @@ export class PostController {
       // Attach the files to the DTO
       createPostDto.images = images.length ? images : createPostDto.images;
       createPostDto.videos = videos.length ? videos : createPostDto.videos;
-      console.log('Images:', createPostDto.images);
       const user = req.user;
       createPostDto.userId = user;
       await this.postService.createPost(createPostDto);
-      console.log('User in request:', req.user); // Debugging
       return { message: 'Post created successfully' };
     } catch (e) {
       console.log('IN CONTROLLER', e);

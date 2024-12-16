@@ -59,7 +59,7 @@ export class PostService {
             createPostDto.images.map(async (image) => {
               console.log('image', image);
               const { key, url } =
-                await this.fileUploadService.uploadSingleFile({
+                await this.fileUploadService.uploadSingleFile(image, true, {
                   file: image,
                   isPublic: true,
                 });
@@ -101,7 +101,7 @@ export class PostService {
                 );
                 console.log(videoPath, outputPath);
                 const { key, url } =
-                  await this.fileUploadService.uploadSingleFile({
+                  await this.fileUploadService.uploadSingleFile(video, true, {
                     file: {
                       ...video,
                       path: outputPath,
