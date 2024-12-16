@@ -44,6 +44,24 @@ export class FeedService {
     //     })
     //     .execute();
     // }
+    if (page === 0) {
+      const posts = await this.db
+        .select({
+          postId: postsTable.postId,
+        })
+        .from(postsTable)
+        .innerJoin(usersTable, eq(postsTable.userId, usersTable.userId))
+        .where(eq(postsTable.userId, userId))
+        .orderBy(desc(postsTable.createdAt))
+        .limit(10);
+      const feed: FeedResponseDto[] = [];
+      for (const post of posts) {
+        const postFeed = await this.PostService.findOne(post.postId);
+        feed.push(postFeed);
+      }
+      feed.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      return feed;
+    }
     const posts = await this.db
       .select({
         postId: postsTable.postId,
@@ -67,7 +85,6 @@ export class FeedService {
       .orderBy(desc(postsTable.createdAt))
       .limit(10)
       .offset(10 * page);
-
     const feed: FeedResponseDto[] = [];
     for (const post of posts) {
       const postFeed = await this.PostService.findOne(post.postId);
