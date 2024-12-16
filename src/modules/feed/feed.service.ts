@@ -44,6 +44,9 @@ export class FeedService {
     //     })
     //     .execute();
     // }
+    if (page < 0) {
+      throw new Error('Invalid page number');
+    }
     if (page == 0) {
       const posts = await this.db
         .select({
