@@ -23,6 +23,13 @@ export class StoryController {
     return this.storyService.getStoriesByUserId(userId);
   }
 
+  @Get('me')
+  @ApiBearerAuth()
+  async getMyStories(@Req() req) {
+    const userId = req.user;
+    return this.storyService.getMyStories(userId);
+  }
+
   @Post()
   @ApiBearerAuth()
   @UseInterceptors(AnyFilesInterceptor())

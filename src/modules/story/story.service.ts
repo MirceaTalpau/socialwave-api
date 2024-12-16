@@ -29,6 +29,22 @@ export class StoryService {
       .where(lt(storyTable.createdAt, twentyFourHoursAgo));
   }
 
+  getMyStories(userId: number) {
+    return this.db
+      .select({
+        storyId: storyTable.storyId,
+        imageUrl: storyTable.imageUrl,
+        videoUrl: storyTable.videoUrl,
+        createdAt: storyTable.createdAt,
+        userId: storyTable.userId,
+        name: usersTable.name,
+        profilePicture: usersTable.profilePicture,
+      })
+      .from(storyTable)
+      .innerJoin(usersTable, eq(storyTable.userId, usersTable.userId))
+      .where(eq(storyTable.userId, userId));
+  }
+
   async getStoriesByUserId(userId: number) {
     return this.db
       .select({
