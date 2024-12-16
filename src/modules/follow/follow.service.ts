@@ -157,9 +157,11 @@ export class FollowService {
         return { message: 'Follow request already sent' };
       }
       const notification = new CreateNotificationDto();
-      notification.message = 'Follow request sent';
+      notification.text = 'Follow request sent';
       notification.userId = followRequest.followeeId;
       notification.type = 'follow';
+      notification.createdAt = new Date();
+      notification.updatedAt = new Date();
       await this.notificationService.createNotification(notification);
       await this.db.insert(followRequestsTable).values(follow).execute();
       return { message: 'Follow request sent' };

@@ -1,6 +1,6 @@
 export class Notification {
   id: number;
-  message: string;
+  text: string;
   read: boolean;
   userId: number;
   details: Record<string, any>;
