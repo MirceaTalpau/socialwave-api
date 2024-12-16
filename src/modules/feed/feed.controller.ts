@@ -11,7 +11,7 @@ export class FeedController {
   async getFeed(@Req() req, @Query() payload: { page?: number } = { page: 1 }) {
     console.log('pg:', payload.page);
     const user = req.user;
-    const feed = await this.feedService.getFeed(user, 1);
+    const feed = await this.feedService.getFeed(user, payload.page);
     console.log('after fetch');
     return feed;
   }

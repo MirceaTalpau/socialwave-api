@@ -44,16 +44,30 @@ export class FeedService {
     //     })
     //     .execute();
     // }
-    if (page === 0) {
+    if (page == 0) {
       const posts = await this.db
         .select({
           postId: postsTable.postId,
         })
         .from(postsTable)
+        .innerJoin(
+          followRequestsTable,
+          eq(postsTable.userId, followRequestsTable.followeeId),
+        )
         .innerJoin(usersTable, eq(postsTable.userId, usersTable.userId))
-        .where(eq(postsTable.userId, userId))
+
+        .where(
+          or(
+            eq(postsTable.userId, userId), // Include user's own posts
+            and(
+              eq(followRequestsTable.followerId, userId), // Posts from followed users
+              eq(followRequestsTable.isAccepted, true), // Follow request must be accepted
+            ),
+          ),
+        )
         .orderBy(desc(postsTable.createdAt))
         .limit(10);
+      console.log(posts);
       const feed: FeedResponseDto[] = [];
       for (const post of posts) {
         const postFeed = await this.PostService.findOne(post.postId);
