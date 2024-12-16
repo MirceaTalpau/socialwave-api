@@ -6,6 +6,7 @@ import { FileUploadService } from '../fileupload/fileupload.service';
 import { FollowService } from '../follow/follow.service';
 import { CommentService } from '../comment/comment.service';
 import { LikeService } from '../like/like.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Module({
   providers: [
@@ -15,6 +16,7 @@ import { LikeService } from '../like/like.service';
     FollowService,
     CommentService,
     LikeService,
+    NotificationService,
   ],
   controllers: [UserController],
   exports: [UserService],
