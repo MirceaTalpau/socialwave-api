@@ -6,6 +6,7 @@ import {
   varchar,
   timestamp,
   index,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 
 export const usersTable = pgTable('users', {
@@ -135,3 +136,16 @@ export const storyTable = pgTable(
     };
   },
 );
+
+export const notificationsTable = pgTable('notifications', {
+  notificationId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.userId),
+  type: varchar().notNull(),
+  text: varchar().notNull(),
+  seen: boolean().notNull().default(false),
+  details: jsonb().default({}),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
+});

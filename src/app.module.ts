@@ -18,6 +18,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { LikeModule } from './modules/like/like.module';
 import { StoryModule } from './modules/story/story.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { StoryModule } from './modules/story/story.module';
     CommentModule,
     LikeModule,
     StoryModule,
+    NotificationModule,
   ],
   controllers: [AuthController, FeedController],
   providers: [AppService],

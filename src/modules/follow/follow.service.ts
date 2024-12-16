@@ -6,10 +6,12 @@ import { followRequestsTable, usersTable } from 'src/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { FollowRequest } from 'src/entities/follow-request.entity';
 import { FollowResponseDto } from './dtos/follow-response.dto';
+import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../notification/dtos/CreateNotification.dto';
 @Injectable()
 export class FollowService {
   private readonly db;
-  constructor() {
+  constructor(private readonly notificationService: NotificationService) {
     this.db = drizzle(process.env.DATABASE_URL);
   }
 
@@ -17,7 +19,6 @@ export class FollowService {
     if (followRequest.followerId === followRequest.followeeId) {
       return { message: 'You cannot follow yourself!' };
     }
-    console.log(followRequest);
     const follow = await this.db
       .select()
       .from(followRequestsTable)
@@ -155,7 +156,11 @@ export class FollowService {
       if (followRequestExists.length > 0) {
         return { message: 'Follow request already sent' };
       }
-
+      const notification = new CreateNotificationDto();
+      notification.message = 'Follow request sent';
+      notification.userId = followRequest.followeeId;
+      notification.type = 'follow';
+      await this.notificationService.createNotification(notification);
       await this.db.insert(followRequestsTable).values(follow).execute();
       return { message: 'Follow request sent' };
     } catch (error) {
