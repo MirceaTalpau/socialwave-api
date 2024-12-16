@@ -62,7 +62,7 @@ export class StoryService {
         eq(storyTable.userId, followRequestsTable.followeeId),
       )
       .innerJoin(usersTable, eq(storyTable.userId, usersTable.userId))
-      .where(eq(storyTable.userId, userId));
+      .where(eq(followRequestsTable.followerId, userId));
   }
 
   async createStory(
